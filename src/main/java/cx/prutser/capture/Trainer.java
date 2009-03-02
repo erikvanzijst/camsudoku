@@ -1,13 +1,15 @@
 package cx.prutser.capture;
 
+import com.digiburo.backprop1.BackProp;
 import com.digiburo.backprop1.Pattern;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Erik van Zijst
@@ -30,6 +32,8 @@ public class Trainer {
             System.err.println(dir + " is not a directory.");
 
         } else {
+            final List<Pattern> patterns = new ArrayList<Pattern>();
+
             final String[] dirs = baseDir.list(new FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     return new File(dir, name).isDirectory() &&
@@ -45,7 +49,7 @@ public class Trainer {
                 });
                 for (File file : files) {
                     try {
-                        Pattern pattern = createPattern(ImageIO.read(file));
+                        patterns.add(createPattern(ImageIO.read(file)));
                     } catch(IllegalArgumentException iae) {
                         System.err.println(file.getPath() + ": " + iae.getMessage());
                     } catch(IOException ioe) {
@@ -53,6 +57,8 @@ public class Trainer {
                     }
                 }
             }
+
+            BackProp network = new BackProp(WIDTH * HEIGHT, 10, 10, 0.45, 0.9);
         }
     }
 
