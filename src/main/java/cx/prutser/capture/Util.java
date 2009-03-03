@@ -1,9 +1,8 @@
 package cx.prutser.capture;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 
 /**
  * @author Erik van Zijst
@@ -21,19 +20,13 @@ public class Util {
     }
 
     public static byte[] getPixels(BufferedImage image) {
-        final int width = image.getWidth();
-        final int height = image.getHeight();
 
-        DataBufferByte buffer = (DataBufferByte)image.getRaster().getDataBuffer();
-        return buffer.getData();
-//        final int[] pixels = new int[width * height];
-//        for(int row = 0; row < height; row++) {
-//            for (int col = 0; col < width; col++) {
-//                final int index = row * width + col;
-//                pixels[index] = image.getRGB(row, col);
-//            }
-//        }
-//        return pixels;
+        if (image.getColorModel().getPixelSize() != 8) {
+            throw new IllegalArgumentException("Color must be 8 bit gray scale.");
+        } else {
+            DataBufferByte buffer = (DataBufferByte)image.getRaster().getDataBuffer();
+            return buffer.getData();
+        }
     }
 
     public static BufferedImage toGrayScale(BufferedImage image) {
