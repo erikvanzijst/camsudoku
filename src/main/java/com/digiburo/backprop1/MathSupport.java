@@ -40,7 +40,7 @@ public class MathSupport {
      * @param upper range
      * @return a random number within the specified range
      */
-    public static synchronized double boundedRandom(double lower, double upper) {
+    public static double boundedRandom(double lower, double upper) {
 	double range = upper - lower;
 	double result = random.nextDouble() * range + lower;
 	

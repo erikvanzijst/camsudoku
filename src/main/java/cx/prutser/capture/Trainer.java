@@ -1,14 +1,12 @@
 package cx.prutser.capture;
 
-import com.digiburo.backprop1.BackProp;
-import com.digiburo.backprop1.Pattern;
-
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -21,6 +19,43 @@ public class Trainer {
     private static final int HEIGHT = 48;
     private String dir = ".";
 
+    static class TestValue {
+
+        private final double[] input;
+        private final int expectedDigit;
+        private final File file;
+        private long successCount = 0L;
+
+        public TestValue(int expectedDigit, byte[] pixels, File file) {
+
+            if (expectedDigit < 0 || expectedDigit > 9 || pixels == null || pixels.length != WIDTH * HEIGHT) {
+                throw new IllegalArgumentException("Pixel data out of range.");
+
+            } else {
+                this.expectedDigit = expectedDigit;
+                this.input = new double[pixels.length];
+                this.file = file;
+
+                // normalize the 8-bit pixel values to [0-1] doubles
+                for (int i = 0; i < pixels.length; i++) {
+                    input[i] = (((int)pixels[i]) & 0xFF) / 256D;
+                }
+            }
+        }
+
+        public int getExpectedDigit() {
+            return expectedDigit;
+        }
+
+        public double[] getInput() {
+            return input;
+        }
+
+        public File getFile() {
+            return file;
+        }
+    }
+
     public Trainer(String... args) {
         parseArgs(args);
     }
@@ -32,13 +67,13 @@ public class Trainer {
             System.err.println(dir + " is not a directory.");
 
         } else {
-            final List<Pattern> patterns = new ArrayList<Pattern>();
+            final List<TestValue> testValues = new ArrayList<TestValue>();
 
             final String[] dirs = baseDir.list(new FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     return new File(dir, name).isDirectory() &&
                             name.length() == 1 &&
-                            "0123456789".contains(name);
+                            "15".contains(name);
                 }
             });
             for (String dir : dirs) {
@@ -49,30 +84,47 @@ public class Trainer {
                 });
                 for (File file : files) {
                     try {
-                        patterns.add(createPattern(ImageIO.read(file)));
+                        testValues.add(new TestValue(Integer.parseInt(dir), Util.getPixels(ImageIO.read(file)), file));
                     } catch(IllegalArgumentException iae) {
                         System.err.println(file.getPath() + ": " + iae.getMessage());
                     } catch(IOException ioe) {
                         System.err.println("Error reading " + file.getPath() + ": " + ioe.getMessage());
                     }
                 }
+                System.out.println(String.format("Loaded %d images of \"%s\"", files.length, dir));
             }
 
-            BackProp network = new BackProp(WIDTH * HEIGHT, 10, 10, 0.45, 0.9);
+            final SudokuDigitRecognizer engine = new SudokuDigitRecognizer();
+
+            int success;
+            do {
+                success = 0;
+                for (TestValue testValue : testValues) {
+                    if (engine.trainAndClassifyResult(testValue.getExpectedDigit(), testValue.getInput())) {
+                        success++;
+                        testValue.successCount++;
+                    }
+                }
+                System.out.println(String.format("Recognized %d of %d images (%.2f%%). Hardest image: %s",
+                        success, testValues.size(), (success / (float)testValues.size()), getHardestImages(testValues, 1).get(0).getPath()));
+            } while (success < testValues.size());
         }
     }
 
-    private Pattern createPattern(BufferedImage image) {
+    private List<File> getHardestImages(List<TestValue> testValues, int count) {
+        List<TestValue> copy = new ArrayList<TestValue>(testValues);
+        Collections.sort(copy, new Comparator<TestValue>() {
+            public int compare(TestValue o1, TestValue o2) {
+                return (int)(o1.successCount - o2.successCount);
+            }
+        });
+        copy = copy.subList(0, Math.min(count, copy.size()));
+        final List<File> files = new ArrayList<File>();
 
-        if (image.getWidth() != WIDTH || image.getHeight() != HEIGHT ||
-                image.getColorModel().getPixelSize() != COLOR_DEPTH) {
-            throw new IllegalArgumentException(String.format(
-                    "Invalid image. Must be %dx%d resolution in %d bit gray scale",
-                    WIDTH, HEIGHT, COLOR_DEPTH));
-        } else {
-
+        for (TestValue testValue : copy) {
+            files.add(testValue.getFile());
         }
-        return null;
+        return files;
     }
 
     public static void main(String... args) {
