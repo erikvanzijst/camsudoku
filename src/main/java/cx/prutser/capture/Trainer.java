@@ -36,6 +36,7 @@ public class Trainer {
                 this.input = new double[pixels.length];
                 this.file = file;
 
+                // TODO: make this a static util method with test case
                 // normalize the 8-bit pixel values to [0-1] doubles
                 for (int i = 0; i < pixels.length; i++) {
                     input[i] = (((int)pixels[i]) & 0xFF) / 256D;
