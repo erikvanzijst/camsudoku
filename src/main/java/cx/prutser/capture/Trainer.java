@@ -33,14 +33,8 @@ public class Trainer {
 
             } else {
                 this.expectedDigit = expectedDigit;
-                this.input = new double[pixels.length];
                 this.file = file;
-
-                // TODO: make this a static util method with test case
-                // normalize the 8-bit pixel values to [0-1] doubles
-                for (int i = 0; i < pixels.length; i++) {
-                    input[i] = (((int)pixels[i]) & 0xFF) / 256D;
-                }
+                this.input = Util.pixelsToPattern(pixels);
             }
         }
 
@@ -74,7 +68,7 @@ public class Trainer {
                 public boolean accept(File dir, String name) {
                     return new File(dir, name).isDirectory() &&
                             name.length() == 1 &&
-                            "0123456789".contains(name);
+                            "012".contains(name);
                 }
             });
             for (String dir : dirs) {
@@ -97,6 +91,8 @@ public class Trainer {
 
             final SudokuDigitRecognizer engine = new SudokuDigitRecognizer();
 
+            long evals = 0L;
+            long start = System.currentTimeMillis();
             int success;
             do {
                 success = 0;
@@ -105,10 +101,15 @@ public class Trainer {
                         success++;
                         testValue.successCount++;
                     }
+                    evals++;
                 }
-                System.out.println(String.format("Recognized %d of %d images (%2f%%). Hardest image: %s",
-                        success, testValues.size(), (success / (float)testValues.size()) * 100,
-                        getHardestImages(testValues, 1).get(0).getPath()));
+                long now = System.currentTimeMillis();
+                if (now - start > 1000L) {
+                    System.out.println(String.format("Recognized %d of %d images (%2.2f%%, %d evals). Hardest image: %s",
+                            success, testValues.size(), (success / (float)testValues.size()) * 100,
+                            evals, getHardestImages(testValues, 1).get(0).getPath()));
+                    start = now;
+                }
             } while (success < testValues.size());
 
             final File f = new File(filename);

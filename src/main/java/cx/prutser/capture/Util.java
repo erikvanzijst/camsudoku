@@ -36,4 +36,19 @@ public class Util {
         g.dispose();
         return gray;
     }
+
+    /**
+     * Normalizes the 8-bit pixel values to [0-1] doubles.
+     *
+     * @param pixels
+     * @return
+     */
+    public static double[] pixelsToPattern(byte[] pixels) {
+
+        final double[] pattern = new double[pixels.length];
+        for (int i = 0; i < pixels.length; i++) {
+            pattern[i] = (((int)pixels[i]) & 0xFF) / 256D;
+        }
+        return pattern;
+    }
 }

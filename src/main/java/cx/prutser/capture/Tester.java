@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * Tester application for the OCR engine. Takes a single image of a digit and
@@ -29,8 +30,13 @@ public class Tester {
             InputStream in = null;
             try {
                 in = filename == null ? System.in : new FileInputStream(filename);
-                final byte[] pixels = Util.getPixels(ImageIO.read(in));
-                
+
+                final double[] pixels = Util.pixelsToPattern(Util.getPixels(ImageIO.read(in)));
+                final double[] result = ocr.test(pixels);
+                final int digit = ocr.testAndClassify(pixels);
+
+                System.out.println(String.format("%s (%s)", (digit > 0 ? String.valueOf(digit) : "Not recognized"), Arrays.toString(result)));
+
             } catch (IOException e) {
                 System.err.println("Error reading image: " + e.getMessage());
             } finally {

@@ -14,14 +14,14 @@ import java.util.Arrays;
  */
 public class SudokuDigitRecognizer {
 
-    private static final double one = 0.9999999999;
-    private static final double zero = 0.0000000001;
+    private static final double one = 0.9999999999D;
+    private static final double zero = 0.0000000001D;
 
     private static final int WIDTH = 48;
     private static final int HEIGHT = 48;
-    private static final int hiddenLayer = 100;
+    private static final int hiddenLayer = 20;
     private static final float learningRate = 0.45F;
-    private static final float momentum = 0.2F;
+    private static final float momentum = 0.9F;
     private static final double[][] outputPattern = new double[10][10];
 
     private final BackProp backProp;
@@ -52,6 +52,50 @@ public class SudokuDigitRecognizer {
             backProp = new BackProp(file);
         } catch(ClassNotFoundException e) {
             throw new IOException("The network configuration file could not parsed.", e);
+        }
+    }
+
+    /**
+     *
+     * @param pixels
+     * @return  the successfully recognized digit ([0-9]), or -1
+     * when the image could not be recognized.
+     */
+    public int testAndClassify(double[] pixels) {
+        return classifyResult(test(pixels));
+    }
+
+    public double[] test(double[] pixels) {
+
+        if (pixels.length != WIDTH * HEIGHT) {
+            throw new IllegalArgumentException("Pixel data out of range.");
+
+        } else {
+            backProp.setInputPattern(pixels);
+            backProp.runNetwork();
+            return backProp.getOutputPattern();
+        }
+    }
+
+    protected int classifyResult(double[] result) {
+
+        if (result.length != 10) {
+            throw new IllegalArgumentException("Invalid array length: " + result.length);
+        } else {
+            for (int i = 0; i < outputPattern.length; i++) {
+
+                boolean recognized = true;
+                for (int j = 0; j < result.length; j++) {
+                    if (round2(result[j]) != round2(outputPattern[i][j])) {
+                        recognized = false;
+                        break;
+                    }
+                }
+                if (recognized) {
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 
@@ -97,13 +141,13 @@ public class SudokuDigitRecognizer {
      * @return value for comparison w/truth
      */
     private int round1(double candidate) {
-        if (candidate > 0.85) {
-            return (1);
-        } else if (candidate < 0.15) {
-            return (0);
+        if (candidate > 0.85D) {
+            return 1;
+        } else if (candidate < 0.15D) {
+            return 0;
+        } else {
+            return -1;
         }
-
-        return (-1);
     }
 
     /**
@@ -113,11 +157,11 @@ public class SudokuDigitRecognizer {
      * @return value for comparison w/truth
      */
     private int round2(double candidate) {
-        if (candidate > 0.5) {
-            return (1);
+        if (candidate >= 0.5D) {
+            return 1;
         }
 
-        return (0);
+        return 0;
     }
 
     /**
