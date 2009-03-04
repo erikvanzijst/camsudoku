@@ -14,10 +14,10 @@ import java.util.List;
  */
 public class Trainer {
 
-    private static final int COLOR_DEPTH = 8;
     private static final int WIDTH = 48;
     private static final int HEIGHT = 48;
     private String dir = ".";
+    private String filename = "config.net";
 
     static class TestValue {
 
@@ -74,7 +74,7 @@ public class Trainer {
                 public boolean accept(File dir, String name) {
                     return new File(dir, name).isDirectory() &&
                             name.length() == 1 &&
-                            "15".contains(name);
+                            "0123456789".contains(name);
                 }
             });
             for (String dir : dirs) {
@@ -106,9 +106,18 @@ public class Trainer {
                         testValue.successCount++;
                     }
                 }
-                System.out.println(String.format("Recognized %d of %d images (%.2f%%). Hardest image: %s",
-                        success, testValues.size(), (success / (float)testValues.size()), getHardestImages(testValues, 1).get(0).getPath()));
+                System.out.println(String.format("Recognized %d of %d images (%2f%%). Hardest image: %s",
+                        success, testValues.size(), (success / (float)testValues.size()) * 100,
+                        getHardestImages(testValues, 1).get(0).getPath()));
             } while (success < testValues.size());
+
+            final File f = new File(filename);
+            try {
+                engine.save(f);
+                System.out.println("Network configuration saved to " + f.getAbsolutePath());
+            } catch (IOException e) {
+                System.err.println("Unable to save the network configuration to " + f.getAbsolutePath());
+            }
         }
     }
 
@@ -142,6 +151,7 @@ public class Trainer {
                 "\n" +
                 "OPTIONS\n" +
                 "   -d, --dir   directory containing the tile images (defaults to .)\n" +
+                "   -f, --file  save learned network state to file (defaults to config.net)\n" +
                 "   -h, --help  print this help message and exit.";
 
         boolean exit = false;
@@ -149,6 +159,8 @@ public class Trainer {
             for (int i = 0; !exit && i < args.length; i++) {
                 if ("-d".equals(args[i]) || "--dir".equals(args[i])) {
                     dir = args[++i];
+                } else if("-f".equals(args[i]) || "--file".equals(args[i])) {
+                    filename = args[++i];
                 } else if("-h".equals(args[i]) || "--help".equals(args[i])) {
                     exit = true;
                 }

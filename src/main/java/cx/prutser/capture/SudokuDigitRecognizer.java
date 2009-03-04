@@ -44,11 +44,12 @@ public class SudokuDigitRecognizer {
      * Creates a new instance of this digit recognizer, initialized with the
      * network configuration stored in the specified file.
      *
-     * @param filename
+     * @param file
+     * @throws IOException  when the network configuration could not be read.
      */
-    public SudokuDigitRecognizer(String filename) throws IOException {
+    public SudokuDigitRecognizer(File file) throws IOException {
         try {
-            backProp = new BackProp(new File(filename));
+            backProp = new BackProp(file);
         } catch(ClassNotFoundException e) {
             throw new IOException("The network configuration file could not parsed.", e);
         }
@@ -117,5 +118,15 @@ public class SudokuDigitRecognizer {
         }
 
         return (0);
+    }
+
+    /**
+     * Writes the current network configuration to the specified file.
+     *
+     * @param file
+     * @throws IOException
+     */
+    public void save(File file) throws IOException {
+        backProp.writer(file);
     }
 }
