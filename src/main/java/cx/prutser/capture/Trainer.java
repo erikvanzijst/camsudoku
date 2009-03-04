@@ -68,7 +68,7 @@ public class Trainer {
                 public boolean accept(File dir, String name) {
                     return new File(dir, name).isDirectory() &&
                             name.length() == 1 &&
-                            "012".contains(name);
+                            "12345".contains(name);
                 }
             });
             for (String dir : dirs) {
