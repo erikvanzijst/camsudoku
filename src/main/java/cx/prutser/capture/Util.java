@@ -51,4 +51,20 @@ public class Util {
         }
         return pattern;
     }
+
+    public static String pixelsToString(byte[] pixels) {
+        StringBuilder buf = new StringBuilder();
+        for (byte b : pixels) {
+            buf.append(b >= 0 ? "." : "#");
+        }
+        return buf.toString();
+    }
+
+    public static String patternToString(double[] pattern) {
+        StringBuilder buf = new StringBuilder();
+        for (double p : pattern) {
+            buf.append(String.format("%3d ", (int)(p * 100)));
+        }
+        return buf.toString();
+    }
 }

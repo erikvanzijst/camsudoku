@@ -81,7 +81,7 @@ public class Trainer {
                     try {
                         testValues.add(new TestValue(Integer.parseInt(dir), Util.getPixels(ImageIO.read(file)), file));
                     } catch(IllegalArgumentException iae) {
-                        System.err.println(file.getPath() + ": " + iae.getMessage());
+                        System.err.println("Error processing: " + file.getPath() + ": " + iae.getMessage());
                     } catch(IOException ioe) {
                         System.err.println("Error reading " + file.getPath() + ": " + ioe.getMessage());
                     }
@@ -89,35 +89,39 @@ public class Trainer {
                 System.out.println(String.format("Loaded %d images of \"%s\"", files.length, dir));
             }
 
-            final SudokuDigitRecognizer engine = new SudokuDigitRecognizer();
+            if (testValues.isEmpty()) {
+                System.out.println("No training images found.");
 
-            long evals = 0L;
-            long start = System.currentTimeMillis();
-            int success;
-            do {
-                success = 0;
-                for (TestValue testValue : testValues) {
-                    if (engine.trainAndClassifyResult(testValue.getExpectedDigit(), testValue.getInput())) {
-                        success++;
-                        testValue.successCount++;
+            } else {
+                final SudokuDigitRecognizer engine = new SudokuDigitRecognizer();
+                long evals = 0L;
+                long start = System.currentTimeMillis();
+                int success;
+                do {
+                    success = 0;
+                    for (TestValue testValue : testValues) {
+                        if (engine.trainAndClassifyResult(testValue.getExpectedDigit(), testValue.getInput())) {
+                            success++;
+                            testValue.successCount++;
+                        }
+                        evals++;
                     }
-                    evals++;
-                }
-                long now = System.currentTimeMillis();
-                if (now - start > 1000L) {
-                    System.out.println(String.format("Recognized %d of %d images (%2.2f%%, %d evals). Hardest image: %s",
-                            success, testValues.size(), (success / (float)testValues.size()) * 100,
-                            evals, getHardestImages(testValues, 1).get(0).getPath()));
-                    start = now;
-                }
-            } while (success < testValues.size());
+                    long now = System.currentTimeMillis();
+                    if (now - start > 1000L) {
+                        System.out.println(String.format("Recognized %d of %d images (%2.2f%%, %d evals). Hardest image: %s",
+                                success, testValues.size(), (success / (float)testValues.size()) * 100,
+                                evals, getHardestImages(testValues, 1).get(0).getPath()));
+                        start = now;
+                    }
+                } while (success < testValues.size());
 
-            final File f = new File(filename);
-            try {
-                engine.save(f);
-                System.out.println("Network configuration saved to " + f.getAbsolutePath());
-            } catch (IOException e) {
-                System.err.println("Unable to save the network configuration to " + f.getAbsolutePath());
+                final File f = new File(filename);
+                try {
+                    engine.save(f);
+                    System.out.println("Network configuration saved to " + f.getAbsolutePath());
+                } catch (IOException e) {
+                    System.err.println("Unable to save the network configuration to " + f.getAbsolutePath());
+                }
             }
         }
     }
