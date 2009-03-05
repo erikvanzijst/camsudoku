@@ -1,17 +1,17 @@
 package cx.prutser.capture;
 
-import java.awt.image.BufferedImage;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Erik van Zijst
  */
 public class SimpleTileExtractor implements TileExtractor {
 
-    public static final int TILE_SIZE = 48;
+    public static final int TILE_SIZE = 16;
     private final List<BufferedImage> tiles;
 
     public SimpleTileExtractor(BufferedImage image) {

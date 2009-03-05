@@ -2,11 +2,11 @@ package cx.prutser.capture;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 
 /**
  * @author Erik van Zijst
@@ -27,7 +27,7 @@ public class SnapshotDialog extends EscapeDialog {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Solve!");
 
-                TileExtractor extractor = new LoggingTileExtractor(new SimpleTileExtractor(bi), "/tmp/images");
+                TileExtractor extractor = new LoggingTileExtractor(new SimpleTileExtractor(bi), "snapshots");
                 
             }
         });

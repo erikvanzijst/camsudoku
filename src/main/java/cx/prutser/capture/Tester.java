@@ -5,17 +5,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Tester application for the OCR engine. Takes a single image of a digit and
- * tries to recognize its value.
+ * Tester application for the OCR engine. Takes a list of images and
+ * tries to recognize their digit value.
  *
  * @author Erik van Zijst
  */
 public class Tester {
 
     private String config = "config.net";
-    private String filename = null;
+    private List<String> files = null;
 
     public Tester(String... args) {
         parseArgs(args);
@@ -26,33 +28,37 @@ public class Tester {
         final File configFile = new File(config);
         try {
             SudokuDigitRecognizer ocr = new SudokuDigitRecognizer(configFile);
-            InputStream in = null;
-            try {
-                in = filename == null ? System.in : new FileInputStream(filename);
 
-                final double[] pixels = Util.pixelsToPattern(Util.getPixels(ImageIO.read(in)));
-                final double[] result = ocr.test(pixels);
-                final int digit = ocr.testAndClassify(pixels);
+            for (String filename : files) {
+                InputStream in = null;
+                try {
+                    in = new FileInputStream(filename);
 
-                final StringBuilder buf = new StringBuilder(digit > 0 ? String.valueOf(digit) : "Not recognized");
-                buf.append("\n")
-                    .append("[");
-                String sep = "";
-                for (double d : result) {
-                    buf.append(sep)
-                        .append(String.format("%.3f", d));
-                    sep = ", ";
-                }
-                buf.append("]");
-                System.out.println(buf.toString());
+                    final double[] pixels = Util.pixelsToPattern(Util.getPixels(ImageIO.read(in)));
+                    final double[] result = ocr.test(pixels);
+                    final int digit = ocr.testAndClassify(pixels);
 
-            } catch (IOException e) {
-                System.err.println("Error reading image: " + e.getMessage());
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (Exception e) {}
+                    final StringBuilder buf = new StringBuilder();
+                    buf.append(String.format("%-20s ", filename))
+                        .append(digit < 0 ? "Not recognized" : String.valueOf(digit))
+                        .append(" [");
+                    String sep = "";
+                    for (double d : result) {
+                        buf.append(sep)
+                            .append(String.format("%.3f", d));
+                        sep = ", ";
+                    }
+                    buf.append("]");
+                    System.out.println(buf.toString());
+
+                } catch (IOException e) {
+                    System.err.println("Error reading image: " + e.getMessage());
+                } finally {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (Exception e) {}
+                    }
                 }
             }
         } catch (IOException e) {
@@ -67,26 +73,26 @@ public class Tester {
 
     private void parseArgs(String... args) {
 
-        final String usage = "Usage: java " + getClass().getName() + " [OPTIONS]\n" +
+        final String usage = "Usage: java " + getClass().getName() + " [OPTIONS] file1 file2...\n" +
                 "\n" +
-                "Tester application for the OCR engine. Takes a single image of a digit and tries\n" +
-                "to recognize it.\n" +
+                "Tester application for the OCR engine. Takes a list of images and tries\n" +
+                "to recognize their digit value.\n" +
                 "Images must be 8-bit gray scale in 16x16 resolution and png format.\n" +
                 "\n" +
                 "OPTIONS\n" +
                 "   -n, --net   network configuration file (defaults to config.net)\n" +
-                "   -f, --file  the image of a single digit (reads from stdin when omitted)\n" +
                 "   -h, --help  print this help message and exit.";
 
         boolean exit = false;
         try {
             for (int i = 0; !exit && i < args.length; i++) {
-                if ("-f".equals(args[i]) || "--file".equals(args[i])) {
-                    filename = args[++i];
-                } else if("-n".equals(args[i]) || "--net".equals(args[i])) {
+                if("-n".equals(args[i]) || "--net".equals(args[i])) {
                     config = args[++i];
                 } else if("-h".equals(args[i]) || "--help".equals(args[i])) {
                     exit = true;
+                } else {
+                    files = Arrays.asList(args).subList(i, args.length);
+                    break;
                 }
             }
         } catch(ArrayIndexOutOfBoundsException e) {

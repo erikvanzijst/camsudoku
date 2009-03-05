@@ -20,7 +20,7 @@ public class SudokuDigitRecognizer {
     private static final int WIDTH = 16;
     private static final int HEIGHT = 16;
     private static final int hiddenLayer = 128;
-    private static final float learningRate = 0.45F;
+    private static final float learningRate = 0.25F;
     private static final float momentum = 0.9F;
     private static final double[][] outputPattern = new double[10][10];
 
@@ -53,6 +53,14 @@ public class SudokuDigitRecognizer {
         } catch(ClassNotFoundException e) {
             throw new IOException("The network configuration file could not parsed.", e);
         }
+    }
+
+    public float getLearningRate() {
+        return learningRate;
+    }
+
+    public float getMomentum() {
+        return momentum;
     }
 
     /**

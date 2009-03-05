@@ -1,9 +1,11 @@
 package cx.prutser.capture;
 
 import javax.imageio.ImageIO;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +20,10 @@ public class Trainer {
     private static final int HEIGHT = 16;
     private String dir = ".";
     private String filename = "config.net";
+
+    private long evals = 0L;
+    private long start = System.currentTimeMillis();
+    private final SudokuDigitRecognizer engine = new SudokuDigitRecognizer();
 
     static class TestValue {
 
@@ -93,37 +99,86 @@ public class Trainer {
                 System.out.println("No training images found.");
 
             } else {
-                final SudokuDigitRecognizer engine = new SudokuDigitRecognizer();
-                long evals = 0L;
-                long start = System.currentTimeMillis();
-                int success;
-                do {
-                    success = 0;
-                    for (TestValue testValue : testValues) {
-                        if (engine.trainAndClassifyResult(testValue.getExpectedDigit(), testValue.getInput())) {
-                            success++;
-                            testValue.successCount++;
-                        }
-                        evals++;
-                    }
-                    long now = System.currentTimeMillis();
-                    if (now - start > 1000L) {
-                        System.out.println(String.format("Recognized %d of %d images (%2.2f%%, %d evals). Hardest image: %s",
-                                success, testValues.size(), (success / (float)testValues.size()) * 100,
-                                evals, getHardestImages(testValues, 1).get(0).getPath()));
-                        start = now;
-                    }
-                } while (success < testValues.size());
+                System.out.println(String.format(
+                        "Training with learning rate %.3f and momentum %.3f.",
+                        engine.getLearningRate(), engine.getMomentum()));
 
-                final File f = new File(filename);
-                try {
-                    engine.save(f);
-                    System.out.println("Network configuration saved to " + f.getAbsolutePath());
-                } catch (IOException e) {
-                    System.err.println("Unable to save the network configuration to " + f.getAbsolutePath());
+                boolean exit = false;
+                final BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+                while (!exit) {
+                    try {
+                        if (stdin.ready()) {
+                            stdin.readLine();
+                            while (true) {
+                                System.out.println(
+                                    "Interrupt program and save current state?\n" +
+                                    "Y (save and stop), K (stop), S (save and resume), enter (resume) : ");
+                                String str = stdin.readLine();
+
+                                if ("Y".equalsIgnoreCase(str)) {
+                                    doSave();
+                                    exit = true;
+                                    break;
+                                } else if ("K".equalsIgnoreCase(str)) {
+                                    exit = true;
+                                    break;
+                                } else if ("S".equalsIgnoreCase(str)) {
+                                    doSave();
+                                    break;
+                                } else if (str.isEmpty()) {
+                                    break;
+                                }
+                            }
+                        } else {
+                            final int success = doRun(testValues);
+                            if (success == testValues.size()) {
+                                doLog(testValues, success);
+                                doSave();
+                                exit = true;
+                            } else {
+
+                                long now = System.currentTimeMillis();
+                                if (now - start > 1000L) {
+                                    doLog(testValues, success);
+                                    start = now;
+                                }
+                            }
+                        }
+                    } catch(IOException e) {
+                    }
                 }
             }
         }
+    }
+
+    private int doRun(List<TestValue> testValues) {
+        int success = 0;
+        for (TestValue testValue : testValues) {
+            if (engine.trainAndClassifyResult(testValue.getExpectedDigit(), testValue.getInput())) {
+                success++;
+                testValue.successCount++;
+            }
+            evals++;
+        }
+        return success;
+    }
+
+    private void doSave() {
+
+        final File f = new File(filename);
+        try {
+            engine.save(f);
+            System.out.println("Network configuration saved to " + f.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Unable to save the network configuration to " + f.getAbsolutePath());
+        }
+    }
+
+    private void doLog(List<TestValue> testValues, int success) {
+
+        System.out.println(String.format("Recognized %d of %d images (%.2f%%, %d evals). Hardest image: %s",
+                success, testValues.size(), (success / (float)testValues.size()) * 100,
+                evals, getHardestImages(testValues, 1).get(0).getPath()));
     }
 
     private List<File> getHardestImages(List<TestValue> testValues, int count) {
