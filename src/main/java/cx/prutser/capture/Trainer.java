@@ -110,7 +110,7 @@ public class Trainer {
                         if (stdin.ready()) {
                             stdin.readLine();
                             while (true) {
-                                System.out.println(
+                                System.out.print(
                                     "Interrupt program and save current state?\n" +
                                     "Y (save and stop), K (stop), S (save and resume), enter (resume) : ");
                                 String str = stdin.readLine();
