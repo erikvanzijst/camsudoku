@@ -29,6 +29,7 @@ public class Tester {
         try {
             SudokuDigitRecognizer ocr = new SudokuDigitRecognizer(configFile);
 
+            int success = 0;
             for (String filename : files) {
                 InputStream in = null;
                 try {
@@ -37,10 +38,15 @@ public class Tester {
                     final double[] pixels = Util.pixelsToPattern(Util.getPixels(ImageIO.read(in)));
                     final double[] result = ocr.test(pixels);
                     final int digit = ocr.testAndClassify(pixels);
+                    final boolean recognized = digit >= 0;
+
+                    if (recognized) {
+                        success++;
+                    }
 
                     final StringBuilder buf = new StringBuilder();
                     buf.append(String.format("%-20s ", filename))
-                        .append(digit < 0 ? "Not recognized" : String.valueOf(digit))
+                        .append(recognized ? String.valueOf(digit) : "Not recognized")
                         .append(" [");
                     String sep = "";
                     for (double d : result) {
@@ -60,6 +66,10 @@ public class Tester {
                         } catch (Exception e) {}
                     }
                 }
+            }
+            if (!files.isEmpty()) {
+                System.out.println(String.format("%.2f%% recognized (%d/%d)",
+                        (success / (float)files.size()) * 100, success, files.size()));
             }
         } catch (IOException e) {
             System.err.println(String.format("Error reading network configuration (%s): %s",
