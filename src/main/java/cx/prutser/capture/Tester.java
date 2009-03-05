@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 /**
  * Tester application for the OCR engine. Takes a single image of a digit and
@@ -35,7 +34,17 @@ public class Tester {
                 final double[] result = ocr.test(pixels);
                 final int digit = ocr.testAndClassify(pixels);
 
-                System.out.println(String.format("%s (%s)", (digit > 0 ? String.valueOf(digit) : "Not recognized"), Arrays.toString(result)));
+                final StringBuilder buf = new StringBuilder(digit > 0 ? String.valueOf(digit) : "Not recognized");
+                buf.append("\n")
+                    .append("[");
+                String sep = "";
+                for (double d : result) {
+                    buf.append(sep)
+                        .append(String.format("%.3f", d));
+                    sep = ", ";
+                }
+                buf.append("]");
+                System.out.println(buf.toString());
 
             } catch (IOException e) {
                 System.err.println("Error reading image: " + e.getMessage());
@@ -62,7 +71,7 @@ public class Tester {
                 "\n" +
                 "Tester application for the OCR engine. Takes a single image of a digit and tries\n" +
                 "to recognize it.\n" +
-                "Images must be 8-bit gray scale in 48x48 resolution and png format.\n" +
+                "Images must be 8-bit gray scale in 16x16 resolution and png format.\n" +
                 "\n" +
                 "OPTIONS\n" +
                 "   -n, --net   network configuration file (defaults to config.net)\n" +

@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class Trainer {
 
-    private static final int WIDTH = 48;
-    private static final int HEIGHT = 48;
+    private static final int WIDTH = 16;
+    private static final int HEIGHT = 16;
     private String dir = ".";
     private String filename = "config.net";
 
@@ -152,7 +152,7 @@ public class Trainer {
                 "\n" +
                 "Trains the neural network to recognize the sudoku digits 1-9 and the blank tile\n" +
                 "using the tile images from a specified directory. The tile images must be 8-bit\n" +
-                "gray scale in 48x48 resolution and png format.\n" +
+                "gray scale in 16x16 resolution and png format.\n" +
                 "\n" +
                 "OPTIONS\n" +
                 "   -d, --dir   directory containing the tile images (defaults to .)\n" +

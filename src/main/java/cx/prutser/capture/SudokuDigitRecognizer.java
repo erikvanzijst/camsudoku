@@ -17,9 +17,9 @@ public class SudokuDigitRecognizer {
     private static final double one = 0.9999999999D;
     private static final double zero = 0.0000000001D;
 
-    private static final int WIDTH = 48;
-    private static final int HEIGHT = 48;
-    private static final int hiddenLayer = 200;
+    private static final int WIDTH = 16;
+    private static final int HEIGHT = 16;
+    private static final int hiddenLayer = 128;
     private static final float learningRate = 0.45F;
     private static final float momentum = 0.9F;
     private static final double[][] outputPattern = new double[10][10];
