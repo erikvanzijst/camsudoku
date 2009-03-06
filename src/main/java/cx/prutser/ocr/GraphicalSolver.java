@@ -45,14 +45,16 @@ public class GraphicalSolver {
 
     public BufferedImage solve(BufferedImage image) throws IllegalArgumentException {
 
-        final List<BufferedImage> tiles = new SimpleTileExtractor(image).getTiles();
+        final List<BufferedImage> tiles = new LoggingTileExtractor(new SimpleTileExtractor(image), "snapshots").getTiles();
         final Integer[] board = new Integer[81];
 
         for (int index = 0; index < tiles.size(); index++) {
 
             int digit = ocr.testAndClassify(Util.pixelsToPattern(Util.getPixels(tiles.get(index))));
-            System.err.println(String.format("Warning: tile %d not recognized!", index));
             board[index] = digit <= 0 ? null : digit;
+            if (digit < 0) {
+                System.err.println(String.format("Warning: tile %d not recognized!", index));
+            }
         }
 
         System.out.println(ClassicSudokuUtils.format(board));
@@ -60,6 +62,9 @@ public class GraphicalSolver {
         final ClassicSolver solver = new ClassicSolver(board);
         solver.solve(new SolutionsCollector<Integer>() {
             public void newSolution(Integer[] solution, SolverContext ctx) {
+
+                System.out.println(ClassicSudokuUtils.format(solution));
+                ctx.cancel();
             }
 
             public void searchComplete(long evaluations) {}

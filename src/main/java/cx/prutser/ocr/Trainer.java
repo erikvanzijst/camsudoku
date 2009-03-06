@@ -5,9 +5,11 @@ import cx.prutser.capture.Util;
 import javax.imageio.ImageIO;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public class Trainer {
 
     private long evals = 0L;
     private long start = System.currentTimeMillis();
-    private final SudokuDigitRecognizer engine = new SudokuDigitRecognizer();
+    private SudokuDigitRecognizer engine;
 
     static class TestValue {
 
@@ -63,6 +65,23 @@ public class Trainer {
 
     public Trainer(String... args) {
         parseArgs(args);
+        File f = new File(filename);
+        if (f.exists()) {
+            InputStream in = null;
+            try {
+                in = new FileInputStream(f);
+                engine = new SudokuDigitRecognizer(in);
+            } catch (IOException e) {
+                System.err.println(String.format(
+                        "Error reading initial network configuration (%s): %s",
+                        f.getAbsolutePath(), e.getMessage()));
+                System.exit(1);
+            } finally {
+                try {
+                    in.close();
+                } catch(IOException e) {}
+            }
+        }
     }
 
     private void train() {
@@ -221,6 +240,7 @@ public class Trainer {
                 "OPTIONS\n" +
                 "   -d, --dir   directory containing the tile images (defaults to .)\n" +
                 "   -f, --file  save learned network state to file (defaults to config.net)\n" +
+                "               if this file exists at startup, it is used at initialization.\n" +
                 "   -h, --help  print this help message and exit.";
 
         boolean exit = false;

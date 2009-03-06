@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Extracts the 81 tile images by simply cutting the source image up in 81
+ * equally sized squares. No other image processing is applied.
+ *
  * @author Erik van Zijst
  */
 class SimpleTileExtractor implements TileExtractor {
@@ -29,6 +32,7 @@ class SimpleTileExtractor implements TileExtractor {
 
             for(int row = 0; row < 9; row++) {
                 for (int col = 0; col < 9; col++) {
+                    
                     tiles.add(Util.toGrayScale(
                             bi.getSubimage(
                             col * (TILE_SIZE + 2 * TILE_MARGIN) + TILE_MARGIN,

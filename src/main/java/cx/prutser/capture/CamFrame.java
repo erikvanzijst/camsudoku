@@ -1,27 +1,28 @@
 package cx.prutser.capture;
 
-import javax.media.CaptureDeviceManager;
+import cx.prutser.ocr.GraphicalSolver;
+
+import javax.media.Buffer;
 import javax.media.CaptureDeviceInfo;
-import javax.media.MediaLocator;
+import javax.media.CaptureDeviceManager;
+import javax.media.Format;
 import javax.media.Manager;
 import javax.media.Player;
-import javax.media.Format;
-import javax.media.Buffer;
-import javax.media.util.BufferToImage;
 import javax.media.control.FormatControl;
 import javax.media.control.FrameGrabbingControl;
-import javax.media.protocol.DataSource;
-import javax.media.protocol.CaptureDevice;
 import javax.media.format.RGBFormat;
 import javax.media.format.VideoFormat;
+import javax.media.protocol.CaptureDevice;
+import javax.media.protocol.DataSource;
+import javax.media.util.BufferToImage;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.Vector;
 import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * @author Erik van Zijst
@@ -52,6 +53,7 @@ public class CamFrame extends JFrame {
                 }
             }
 
+            final GraphicalSolver ocrSolver = new GraphicalSolver();
             final Player player = Manager.createRealizedPlayer(dataSource);
             final FrameGrabbingControl grabber = (FrameGrabbingControl)player.getControl(FrameGrabbingControl.class.getName());
 
@@ -61,7 +63,7 @@ public class CamFrame extends JFrame {
                     System.out.println("Grabbing current frame.");
                     Buffer buffer = grabber.grabFrame();
                     Image image = new BufferToImage((VideoFormat)buffer.getFormat()).createImage(buffer);
-                    new SnapshotDialog(CamFrame.this, image);
+                    new SnapshotDialog(CamFrame.this, image, ocrSolver);
                 }
             });
 
@@ -80,8 +82,6 @@ public class CamFrame extends JFrame {
             setVisible(true);
         }
     }
-
-    
 
     public static void main(String[] args) throws Exception {
         JFrame f = new CamFrame(args);

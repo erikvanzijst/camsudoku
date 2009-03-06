@@ -1,5 +1,8 @@
 package com.digiburo.backprop1;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -85,6 +88,16 @@ public class BackProp {
      */
     public BackProp(InputStream in) throws IOException, ClassNotFoundException {
         reader(in);
+        getLocalReferences();
+    }
+
+    /**
+     * Constructor for existing backpropagation network.
+     *
+     * @param file containing serialized network
+     */
+    public BackProp(File file) throws IOException, ClassNotFoundException {
+        reader(file);
         getLocalReferences();
     }
 
@@ -252,6 +265,35 @@ public class BackProp {
             network = (Network) ois.readObject();
         } finally {
             ois.close();
+        }
+    }
+
+
+    /**
+     * Write patterns as a serialized object
+     *
+     * @param file to be written
+     */
+    public void writer(File file) throws IOException {
+	OutputStream os = new FileOutputStream(file);
+        try {
+        writer(os);
+        } finally {
+            os.close();
+        }
+    }
+
+    /**
+     * Read serialized pattern
+     *
+     * @param file to be read
+     */
+    public void reader(File file) throws IOException, ClassNotFoundException {
+    	InputStream is = new FileInputStream(file);
+        try {
+            reader(is);
+        } finally {
+            is.close();
         }
     }
 

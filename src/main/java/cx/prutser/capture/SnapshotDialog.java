@@ -1,8 +1,6 @@
 package cx.prutser.capture;
 
-import cx.prutser.ocr.LoggingTileExtractor;
-import cx.prutser.ocr.SimpleTileExtractor;
-import cx.prutser.ocr.TileExtractor;
+import cx.prutser.ocr.GraphicalSolver;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +15,7 @@ import java.awt.image.BufferedImage;
  */
 public class SnapshotDialog extends EscapeDialog {
 
-    public SnapshotDialog(Frame owner, Image image) {
+    public SnapshotDialog(Frame owner, Image image, final GraphicalSolver solver) {
         super(owner, true);
         setTitle("Snapshot");
         setLayout(new BorderLayout());
@@ -30,9 +28,7 @@ public class SnapshotDialog extends EscapeDialog {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Solve!");
-
-                TileExtractor extractor = new LoggingTileExtractor(new SimpleTileExtractor(bi), "snapshots");
-                
+                solver.solve(bi);
             }
         });
         add(label, BorderLayout.NORTH);
