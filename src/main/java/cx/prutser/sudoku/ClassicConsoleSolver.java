@@ -4,11 +4,7 @@ import java.io.FileReader;
 import java.io.InputStreamReader;
 
 /**
- * Created by IntelliJ IDEA.
- * User: erik
- * Date: 4/10/2008
- * Time: 14:09:43
- * To change this template use File | Settings | File Templates.
+ * @author Erik van Zijst
  */
 public class ClassicConsoleSolver {
 
