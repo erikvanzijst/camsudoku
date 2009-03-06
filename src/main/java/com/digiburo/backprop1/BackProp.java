@@ -1,13 +1,10 @@
 package com.digiburo.backprop1;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-import java.io.IOException; 
-import java.io.FileNotFoundException;
+import java.io.OutputStream;
 
 /**
  * Back Propagation Neural Network.  
@@ -84,11 +81,11 @@ public class BackProp {
     /**
      * Constructor for existing backpropagation network.
      *
-     * @param file containing serialized network
+     * @param in containing serialized network
      */
-    public BackProp(File file) throws IOException, FileNotFoundException, ClassNotFoundException {
-	reader(file);
-	getLocalReferences();
+    public BackProp(InputStream in) throws IOException, ClassNotFoundException {
+        reader(in);
+        getLocalReferences();
     }
 
     /**
@@ -191,7 +188,7 @@ public class BackProp {
     /**
      * Apply output pattern to output nodes
      *
-     * @param pattern
+     * @param pp
      */
     public void setOutputPattern(Pattern pp) {
 	setOutputPattern(pp.getOutput());
@@ -200,7 +197,7 @@ public class BackProp {
     /**
      * Apply output pattern to output nodes
      *
-     * @param pattern
+     * @param output
      */
     public void setOutputPattern(double[] output) {
 	int output_node_ndx = first_output_node_ndx;
@@ -233,25 +230,31 @@ public class BackProp {
     /**
      * Write patterns as a serialized object
      *
-     * @param file to be written
+     * @param out to be written
      */
-    public void writer(File file) throws IOException, FileNotFoundException {
-	ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
-	oos.writeObject(network);
-	oos.close();
+    public void writer(OutputStream out) throws IOException {
+        ObjectOutputStream oos = new ObjectOutputStream(out);
+        try {
+            oos.writeObject(network);
+        } finally {
+            oos.close();
+        }
     }
-    
+
     /**
      * Read serialized pattern
      *
-     * @param file to be read
+     * @param in to be read
      */
-    public void reader(File file) throws IOException, FileNotFoundException, ClassNotFoundException {
-	ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-	network = (Network) ois.readObject();
-	ois.close();
+    public void reader(InputStream in) throws IOException, ClassNotFoundException {
+        ObjectInputStream ois = new ObjectInputStream(in);
+        try {
+            network = (Network) ois.readObject();
+        } finally {
+            ois.close();
+        }
     }
-    
+
     /**
      * Driver
      */

@@ -1,4 +1,6 @@
-package cx.prutser.capture;
+package cx.prutser.ocr;
+
+import cx.prutser.capture.Util;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -27,7 +29,7 @@ public class Tester {
 
         final File configFile = new File(config);
         try {
-            SudokuDigitRecognizer ocr = new SudokuDigitRecognizer(configFile);
+            SudokuDigitRecognizer ocr = new SudokuDigitRecognizer(new FileInputStream(configFile));
 
             int success = 0;
             for (String filename : files) {

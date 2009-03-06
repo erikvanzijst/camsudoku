@@ -1,11 +1,12 @@
-package cx.prutser.capture;
+package cx.prutser.ocr;
+
+import cx.prutser.capture.Util;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.util.List;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Erik van Zijst

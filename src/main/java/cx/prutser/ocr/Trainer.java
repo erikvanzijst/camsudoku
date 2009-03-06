@@ -1,11 +1,15 @@
-package cx.prutser.capture;
+package cx.prutser.ocr;
+
+import cx.prutser.capture.Util;
 
 import javax.imageio.ImageIO;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -166,11 +170,16 @@ public class Trainer {
     private void doSave() {
 
         final File f = new File(filename);
+        OutputStream out = null;
         try {
-            engine.save(f);
+            engine.save(out = new FileOutputStream(f));
             System.out.println("Network configuration saved to " + f.getAbsolutePath());
         } catch (IOException e) {
             System.err.println("Unable to save the network configuration to " + f.getAbsolutePath());
+        } finally {
+            try {
+                out.close();
+            } catch (IOException e) {}
         }
     }
 

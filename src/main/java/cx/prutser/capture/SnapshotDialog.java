@@ -1,5 +1,9 @@
 package cx.prutser.capture;
 
+import cx.prutser.ocr.LoggingTileExtractor;
+import cx.prutser.ocr.SimpleTileExtractor;
+import cx.prutser.ocr.TileExtractor;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

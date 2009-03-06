@@ -1,4 +1,6 @@
-package cx.prutser.capture;
+package cx.prutser.ocr;
+
+import cx.prutser.capture.Util;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
