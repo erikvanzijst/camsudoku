@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Erik van Zijst
  */
-public class LoggingTileExtractor implements TileExtractor {
+class LoggingTileExtractor implements TileExtractor {
 
     private final TileExtractor tileExtractor;
 

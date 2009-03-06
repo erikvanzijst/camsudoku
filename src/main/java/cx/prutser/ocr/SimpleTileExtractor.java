@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Erik van Zijst
  */
-public class SimpleTileExtractor implements TileExtractor {
+class SimpleTileExtractor implements TileExtractor {
 
     public static final int TILE_SIZE = 16;
     public static final int TILE_MARGIN = 1;
