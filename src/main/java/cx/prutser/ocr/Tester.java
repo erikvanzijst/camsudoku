@@ -1,7 +1,5 @@
 package cx.prutser.ocr;
 
-import cx.prutser.capture.Util;
-
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +35,7 @@ public class Tester {
                 try {
                     in = new FileInputStream(filename);
 
-                    final double[] pixels = Util.pixelsToPattern(Util.getPixels(ImageIO.read(in)));
+                    final double[] pixels = OCRUtils.pixelsToPattern(OCRUtils.getPixels(ImageIO.read(in)));
                     final double[] result = ocr.test(pixels);
                     final int digit = ocr.testAndClassify(pixels);
                     final boolean recognized = digit >= 0;

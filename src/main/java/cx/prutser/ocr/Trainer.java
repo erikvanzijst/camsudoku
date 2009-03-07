@@ -1,7 +1,5 @@
 package cx.prutser.ocr;
 
-import cx.prutser.capture.Util;
-
 import javax.imageio.ImageIO;
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,7 +44,7 @@ public class Trainer {
             } else {
                 this.expectedDigit = expectedDigit;
                 this.file = file;
-                this.input = Util.pixelsToPattern(pixels);
+                this.input = OCRUtils.pixelsToPattern(pixels);
             }
         }
 
@@ -108,7 +106,7 @@ public class Trainer {
                 });
                 for (File file : files) {
                     try {
-                        testValues.add(new TestValue(Integer.parseInt(dir), Util.getPixels(ImageIO.read(file)), file));
+                        testValues.add(new TestValue(Integer.parseInt(dir), OCRUtils.getPixels(ImageIO.read(file)), file));
                     } catch(IllegalArgumentException iae) {
                         System.err.println("Error processing: " + file.getPath() + ": " + iae.getMessage());
                     } catch(IOException ioe) {

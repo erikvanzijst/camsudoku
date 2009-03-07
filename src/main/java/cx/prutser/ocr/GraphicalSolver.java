@@ -1,6 +1,5 @@
 package cx.prutser.ocr;
 
-import cx.prutser.capture.Util;
 import cx.prutser.sudoku.ClassicSolver;
 import cx.prutser.sudoku.ClassicSudokuUtils;
 import cx.prutser.sudoku.SolutionsCollector;
@@ -50,7 +49,7 @@ public class GraphicalSolver {
 
         for (int index = 0; index < tiles.size(); index++) {
 
-            int digit = ocr.testAndClassify(Util.pixelsToPattern(Util.getPixels(tiles.get(index))));
+            int digit = ocr.testAndClassify(OCRUtils.pixelsToPattern(OCRUtils.getPixels(tiles.get(index))));
             board[index] = digit <= 0 ? null : digit;
             if (digit < 0) {
                 System.err.println(String.format("Warning: tile %d not recognized!", index));

@@ -1,6 +1,6 @@
 package cx.prutser.ocr;
 
-import cx.prutser.capture.Util;
+import cx.prutser.capture.CaptureUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -17,7 +17,7 @@ import java.util.List;
 class SimpleTileExtractor implements TileExtractor {
 
     public static final int TILE_SIZE = 16;
-    public static final int TILE_MARGIN = 1;
+    public static final int TILE_MARGIN = 2;
     private final List<BufferedImage> tiles;
 
     public SimpleTileExtractor(BufferedImage image) {
@@ -27,13 +27,13 @@ class SimpleTileExtractor implements TileExtractor {
 
         } else {
             final List<BufferedImage> tiles = new ArrayList<BufferedImage>();
-            final BufferedImage bi = Util.createBufferedImage(
+            final BufferedImage bi = CaptureUtils.createBufferedImage(
                     image.getScaledInstance(-1, (TILE_SIZE + 2 * TILE_MARGIN) * 9, Image.SCALE_SMOOTH));
 
             for(int row = 0; row < 9; row++) {
                 for (int col = 0; col < 9; col++) {
                     
-                    tiles.add(Util.toGrayScale(
+                    tiles.add(OCRUtils.toGrayScale(
                             bi.getSubimage(
                             col * (TILE_SIZE + 2 * TILE_MARGIN) + TILE_MARGIN,
                             row * (TILE_SIZE + 2 * TILE_MARGIN) + TILE_MARGIN,

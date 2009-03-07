@@ -20,7 +20,7 @@ public class SnapshotDialog extends EscapeDialog {
         setTitle("Snapshot");
         setLayout(new BorderLayout());
 
-        final BufferedImage bi = Util.createBufferedImage(image);
+        final BufferedImage bi = CaptureUtils.createBufferedImage(image);
 
         ImageIcon icon = new ImageIcon(bi);
         JLabel label = new JLabel(icon);

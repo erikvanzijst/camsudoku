@@ -1,7 +1,5 @@
 package cx.prutser.ocr;
 
-import cx.prutser.capture.Util;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -22,7 +20,7 @@ class LoggingTileExtractor implements TileExtractor {
         for (BufferedImage image : getTiles()) {
             File file = new File(String.format("%s/%d.png",path, sequence++));
             try {
-                byte[] pixels = Util.getPixels(image);
+                byte[] pixels = OCRUtils.getPixels(image);
 //                ColorModel cm = image.getColorModel();
 //                int ps = cm.getPixelSize();
 //                int r = cm.getRed(pixels[0]);
