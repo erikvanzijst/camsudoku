@@ -21,8 +21,8 @@ public class SudokuDigitRecognizer {
     private static final int WIDTH = 16;
     private static final int HEIGHT = 16;
     private static final int hiddenLayer = 128;
-    private static final float learningRate = 0.25F;
-    private static final float momentum = 0.75F;
+    private static final float learningRate = 0.25F;    // was 0.25
+    private static final float momentum = 0.30F;    // was 0.75
     private static final double[][] outputPattern = new double[10][10];
 
     private final BackProp backProp;
@@ -77,7 +77,7 @@ public class SudokuDigitRecognizer {
     public double[] test(double[] pixels) {
 
         if (pixels.length != WIDTH * HEIGHT) {
-            throw new IllegalArgumentException("Pixel data out of range.");
+            throw new IllegalArgumentException("Unsupported tile size: " + pixels.length);
 
         } else {
             backProp.setInputPattern(pixels);

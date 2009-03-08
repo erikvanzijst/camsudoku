@@ -44,8 +44,12 @@ public class GraphicalSolver {
 
     public BufferedImage solve(BufferedImage image) throws IllegalArgumentException {
 
-        final List<BufferedImage> tiles = new LoggingTileExtractor(new SimpleTileExtractor(image), "snapshots").getTiles();
         final Integer[] board = new Integer[81];
+        final List<BufferedImage> tiles =
+                new AdaptiveThresholdingExtractor(
+                        new LoggingTileExtractor(
+                                new SimpleTileExtractor(), "snapshots"))
+                .extractTiles(image);
 
         for (int index = 0; index < tiles.size(); index++) {
 
@@ -62,7 +66,8 @@ public class GraphicalSolver {
         solver.solve(new SolutionsCollector<Integer>() {
             public void newSolution(Integer[] solution, SolverContext ctx) {
 
-                System.out.println(ClassicSudokuUtils.format(solution));
+                System.out.println(String.format(
+                        "Solution found in %d evaluations:\n%s", ctx.evaluations(), ClassicSudokuUtils.format(solution)));
                 ctx.cancel();
             }
 

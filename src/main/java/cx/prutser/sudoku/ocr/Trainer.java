@@ -79,6 +79,8 @@ public class Trainer {
                     in.close();
                 } catch(IOException e) {}
             }
+        } else {
+            engine = new SudokuDigitRecognizer();
         }
     }
 

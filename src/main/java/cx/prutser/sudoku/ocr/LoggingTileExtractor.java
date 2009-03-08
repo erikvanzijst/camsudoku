@@ -12,33 +12,34 @@ import java.util.List;
 class LoggingTileExtractor implements TileExtractor {
 
     private final TileExtractor tileExtractor;
+    private final String path;
+    private long sequence;
 
     public LoggingTileExtractor(TileExtractor tileExtractor, String path) {
+
         this.tileExtractor = tileExtractor;
-        long sequence = System.currentTimeMillis();
-        
-        for (BufferedImage image : getTiles()) {
-            File file = new File(String.format("%s/%d.png",path, sequence++));
-            try {
-                byte[] pixels = OCRUtils.getPixels(image);
-//                ColorModel cm = image.getColorModel();
-//                int ps = cm.getPixelSize();
-//                int r = cm.getRed(pixels[0]);
-//                int g = cm.getGreen(pixels[0]);
-//                int b = cm.getBlue(pixels[0]);
-                ImageIO.write(image, "png", file);
-                System.out.println("Writing tile " + file.getPath() + "...");
-            } catch(IOException e) {
-                System.err.println("Error writing tile " + file.getPath() + ": " + e.getMessage());
-            }
+        this.path = path;
+        this.sequence = System.currentTimeMillis();
+    }
+
+    public List<BufferedImage> extractTiles(BufferedImage image) {
+
+        final List<BufferedImage> tiles = tileExtractor.extractTiles(image);
+
+        write(image);
+        for (BufferedImage tile : tiles) {
+            write(tile);
         }
+        return tiles;
     }
 
-    public int getNumberOfTiles() {
-        return tileExtractor.getNumberOfTiles();
-    }
+    private void write(BufferedImage image) {
 
-    public List<BufferedImage> getTiles() {
-        return tileExtractor.getTiles();
+        File file = new File(String.format("%s/%d.png",path, sequence++));
+        try {
+            ImageIO.write(image, "png", file);
+        } catch(IOException e) {
+            System.err.println("Error writing image " + file.getPath() + ": " + e.getMessage());
+        }
     }
 }

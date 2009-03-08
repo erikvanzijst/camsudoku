@@ -7,7 +7,13 @@ import java.util.List;
  * @author Erik van Zijst
  */
 interface TileExtractor {
-    int getNumberOfTiles();
 
-    List<BufferedImage> getTiles();
+    /**
+     * Takes the source image and extracts the sudoku tiles. {@link cx.prutser.sudoku.ocr.TileExtractor}s
+     * can be stacked.
+     * 
+     * @param image
+     * @return
+     */
+    List<BufferedImage> extractTiles(BufferedImage image);
 }

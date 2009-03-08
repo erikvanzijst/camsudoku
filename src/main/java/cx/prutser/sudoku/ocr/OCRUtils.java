@@ -59,37 +59,40 @@ public class OCRUtils {
     }
 
     /**
-     * Returns the "center of gravity" for the specified image.
+     * Returns the "center of mass" for the specified image.
      *
      * @param pixels
      * @param width
      * @param height
      * @param invert    whether or not to invert the unsigned grey scale values.
-     * @return  the coordinates of the pixel closest to the center of gravity.
+     * @return  the coordinates of the pixel closest to the center of mass.
      */
-    public static Pair<Integer, Integer> centerOfGravity(byte[] pixels, int width, int height, boolean invert) {
+    public static Pair<Integer, Integer> centerOfMass(
+            byte[] pixels, int width, int height, boolean invert) {
 
         assert width >= 0 && height >= 0 && pixels.length == width * height;
 
-        // center of gravity:
-        float x1 = 0F;
-        float y1 = 0F;
+        // center of mass:
+        double x1 = 0D;
+        double y1 = 0D;
 
-        float w1 = 0F;
+        double w1 = 0D;
         for (int i = 0; i < pixels.length; i++) {
-            float x2 = i % width;
-            float y2 = i / width;
+            double x2 = i % width;
+            double y2 = i / width;
             int w2 = (invert ? invert(pixels[i]) : pixels[i]) & 0xFF;
 
-            float dx = x2 - x1;
-            float dy = y2 - y1;
-            float ratio = (w1 + w2) == 0F ? 0F : w2 / (w1 + w2);
+            double dx = x2 - x1;
+            double dy = y2 - y1;
+            double ratio = (w1 + w2) == 0D ? 0D : (w2 / (w1 + w2));
 
             x1 += dx * ratio;
             y1 += dy * ratio;
             w1 += w2;
         }
-        return Pair.newInstance(Math.round(x1), Math.round(y1));
+        assert x1 <= width && y1 <= height :
+                String.format("Center of mass out of bounds: (%d, %d)", x1, y1);
+        return Pair.newInstance(Math.round((float)x1), Math.round((float)y1));
     }
 
     public static byte invert(byte b) {
