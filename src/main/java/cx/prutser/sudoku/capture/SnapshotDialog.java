@@ -22,6 +22,14 @@ public class SnapshotDialog extends EscapeDialog {
 
         final BufferedImage bi = CaptureUtils.createBufferedImage(image, BufferedImage.TYPE_INT_RGB);
 
+//        PerspectiveFilter filter = new PerspectiveFilter();
+//        filter.quadToUnitSquare(0.2F, 0.3F,  0.7F, 0.1F,  0.6F, 0.8F,  0.4F, 0.8F);
+//        filter.setClip(true);
+//        filter.setInterpolation(TransformFilter.BILINEAR);
+//        BufferedImage target = new BufferedImage(bi.getWidth(null), bi.getHeight(null), BufferedImage.TYPE_INT_RGB);
+//        filter.filter(bi, target);
+//        ImageIcon icon = new ImageIcon(target);
+
         ImageIcon icon = new ImageIcon(bi);
         JLabel label = new JLabel(icon);
         JButton button = new JButton("Solve");

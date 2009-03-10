@@ -15,6 +15,12 @@
             <version>2.1.1e</version>
         </dependency>
         <dependency>
+            <!-- get this library from https://pixels.dev.java.net/ -->
+            <groupId>com.jhlabs.pixels</groupId>
+            <artifactId>pixels-core</artifactId>
+            <version>2.1.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.0</version>
