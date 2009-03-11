@@ -129,6 +129,7 @@ public class AdapThresh {
                         }
                         //If out of bounds then ignore pixel
                         catch (ArrayIndexOutOfBoundsException e) {
+                            // TODO: eliminate this
                         }
                     }
                 }
@@ -207,6 +208,7 @@ public class AdapThresh {
                         }
                         //If out of bounds then ignore pixel
                         catch (ArrayIndexOutOfBoundsException e) {
+                            // TODO: eliminate this
                         }
                     }
                 }
