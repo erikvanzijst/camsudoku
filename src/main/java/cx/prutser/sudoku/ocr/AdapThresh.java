@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 /**
  * Shamelessly taken from http://homepages.inf.ed.ac.uk/rbf/HIPR2/flatjavasrc/AdapThresh.java
+ * and slightly tweaked for performance.
  *
  * Also see: http://homepages.inf.ed.ac.uk/rbf/HIPR2
  */
@@ -47,6 +48,7 @@ public class AdapThresh {
             }
         }
 
+        final int HALF_SIZE = size / 2;
         //Now find the sum of values in the size X size neigbourhood
         for (int j = 0; j < i_h; j++) {
             for (int i = 0; i < i_w; i++) {
@@ -55,18 +57,18 @@ public class AdapThresh {
                 //Check the local neighbourhood
                 for (int k = 0; k < size; k++) {
                     for (int l = 0; l < size; l++) {
-                        try {
-                            mean = mean + tmp_2d[(i - ((int) (size / 2)) + k)]
-                                    [(j - ((int) (size / 2)) + l)];
-                            count++;
-                        }
+
+                        int x = i - HALF_SIZE + k;
+                        int y = j - HALF_SIZE + l;
                         //If out of bounds then ignore pixel
-                        catch (ArrayIndexOutOfBoundsException e) {
+                        if (x >= 0 && x < i_w && y >= 0 && y < i_h) {
+                            mean = mean + tmp_2d[x][y];
+                            count++;
                         }
                     }
                 }
                 //Find the mean value
-                mean = (int) (mean / count) - con;
+                mean = (mean / count) - con;
 
                 //Threshold below the mean
                 if (tmp_2d[i][j] > mean) {

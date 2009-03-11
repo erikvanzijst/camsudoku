@@ -83,7 +83,9 @@ public class GraphicalSolver {
                     ctx.cancel();
                 }
 
-                public void searchComplete(long evaluations) {}
+                public void searchComplete(long evaluations) {
+                    System.out.println("Puzzle cannot be solved.");
+                }
             });
 
             return image;

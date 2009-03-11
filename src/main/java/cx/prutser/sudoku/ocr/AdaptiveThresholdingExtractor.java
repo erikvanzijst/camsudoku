@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class AdaptiveThresholdingExtractor implements TileExtractor {
 
-    private final static int SIZE = 7;
+    private final static int SIZE = 12;
     private final static int CONSTANT = 7;
 
     private final AdapThresh thresholder;
