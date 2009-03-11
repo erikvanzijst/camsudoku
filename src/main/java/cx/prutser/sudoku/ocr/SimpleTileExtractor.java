@@ -21,13 +21,14 @@ class SimpleTileExtractor implements TileExtractor {
 
     public List<BufferedImage> extractTiles(BufferedImage image) {
 
-        if (image == null || image.getWidth() < image.getHeight()) {
+        if (image == null || image.getWidth() != image.getHeight()) {
             throw new IllegalArgumentException("Invalid dimensions.");
 
         } else {
+            final int rib = (TILE_SIZE + 2 * TILE_MARGIN) * 9;
             final List<BufferedImage> tiles = new ArrayList<BufferedImage>();
             final BufferedImage bi = CaptureUtils.createBufferedImage(
-                    image.getScaledInstance(-1, (TILE_SIZE + 2 * TILE_MARGIN) * 9, Image.SCALE_SMOOTH), BufferedImage.TYPE_INT_RGB);
+                    image.getScaledInstance(rib, rib, Image.SCALE_SMOOTH), BufferedImage.TYPE_INT_RGB);
 
             for(int row = 0; row < 9; row++) {
                 for (int col = 0; col < 9; col++) {

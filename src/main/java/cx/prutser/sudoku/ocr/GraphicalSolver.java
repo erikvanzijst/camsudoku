@@ -42,38 +42,51 @@ public class GraphicalSolver {
         }
     }
 
+    /**
+     * The supplied image must exactly contain the puzzle and be square in size.
+     *
+     * @param image
+     * @return  the same image, with the missing digits superimposed on the empty
+     * tiles.
+     * @throws IllegalArgumentException when the image is not squared.
+     */
     public BufferedImage solve(BufferedImage image) throws IllegalArgumentException {
 
-        final Integer[] board = new Integer[81];
-        final List<BufferedImage> tiles =
-                new AdaptiveThresholdingExtractor(
-                        new LoggingTileExtractor(
-                                new SimpleTileExtractor(), "snapshots"))
-                .extractTiles(image);
+        if (image.getWidth() != image.getHeight()) {
+            throw new IllegalArgumentException(String.format(
+                    "The supplied image must be a square; not %dx%d", image.getWidth(), image.getHeight()));
+        } else {
+            final Integer[] board = new Integer[81];
+            final List<BufferedImage> tiles =
+                    new AdaptiveThresholdingExtractor(
+                            new LoggingTileExtractor(
+                                    new SimpleTileExtractor(), "snapshots"))
+                    .extractTiles(image);
 
-        for (int index = 0; index < tiles.size(); index++) {
+            for (int index = 0; index < tiles.size(); index++) {
 
-            int digit = ocr.testAndClassify(OCRUtils.pixelsToPattern(OCRUtils.getPixels(tiles.get(index))));
-            board[index] = digit <= 0 ? null : digit;
-            if (digit < 0) {
-                System.err.println(String.format("Warning: tile %d not recognized!", index));
+                int digit = ocr.testAndClassify(OCRUtils.pixelsToPattern(OCRUtils.getPixels(tiles.get(index))));
+                board[index] = digit <= 0 ? null : digit;
+                if (digit < 0) {
+                    System.err.println(String.format("Warning: tile %d not recognized!", index));
+                }
             }
+
+            System.out.println(ClassicSudokuUtils.format(board));
+
+            final ClassicSolver solver = new ClassicSolver(board);
+            solver.solve(new SolutionsCollector<Integer>() {
+                public void newSolution(Integer[] solution, SolverContext ctx) {
+
+                    System.out.println(String.format(
+                            "Solution found in %d evaluations:\n%s", ctx.evaluations(), ClassicSudokuUtils.format(solution)));
+                    ctx.cancel();
+                }
+
+                public void searchComplete(long evaluations) {}
+            });
+
+            return image;
         }
-
-        System.out.println(ClassicSudokuUtils.format(board));
-
-        final ClassicSolver solver = new ClassicSolver(board);
-        solver.solve(new SolutionsCollector<Integer>() {
-            public void newSolution(Integer[] solution, SolverContext ctx) {
-
-                System.out.println(String.format(
-                        "Solution found in %d evaluations:\n%s", ctx.evaluations(), ClassicSudokuUtils.format(solution)));
-                ctx.cancel();
-            }
-
-            public void searchComplete(long evaluations) {}
-        });
-
-        return image;
     }
 }

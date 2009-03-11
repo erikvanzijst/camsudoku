@@ -63,7 +63,7 @@ public class CamFrame extends JFrame {
                     System.out.println("Grabbing current frame.");
                     Buffer buffer = grabber.grabFrame();
                     Image image = new BufferToImage((VideoFormat)buffer.getFormat()).createImage(buffer);
-                    new SnapshotDialog(CamFrame.this, image, ocrSolver);
+                    new SnapshotDialog(image, ocrSolver);
                 }
             });
 
