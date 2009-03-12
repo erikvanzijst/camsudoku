@@ -65,12 +65,15 @@ public class ClassicSolver implements Solver<Integer> {
     private Tile<Integer> tiles[];
     private Constraint[][] constraintsByTile = new Constraint[81][];
     private long evals = 0L;
+    private final long timeout;
 
     public ClassicSolver(Integer[] board) {
 
         if (board == null || board.length != 81) {
             throw new IllegalArgumentException("Board must contain 81 tiles.");
+
         } else {
+            timeout = 0L;  // no time constraint by default
             tiles = new Tile[81];
             for (int i = 0; i < board.length; i++) {
                 if (board[i] != null && (board[i] < 1 || board[i] > 9)) {

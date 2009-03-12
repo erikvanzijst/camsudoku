@@ -113,7 +113,8 @@ public class ApertureImage extends JPanel implements MouseListener, MouseMotionL
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D)g;
 
-        g2.drawImage(image, 0, 0, null);
+        g2.clearRect(0, 0, width, height);
+        g2.drawImage(image, (width - image.getWidth()) / 2, (height - image.getHeight()) / 2, null);
         if (!fixed) {
             g2.setPaint(Color.white);
             g2.drawPolygon(x, y, 4);

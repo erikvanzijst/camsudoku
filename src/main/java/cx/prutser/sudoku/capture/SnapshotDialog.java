@@ -48,9 +48,11 @@ public class SnapshotDialog extends JFrame {
 
                 // TODO: do this in a thread
                 final int newSize = Math.min(bi.getWidth(), bi.getHeight());
-                solver.solve(CaptureUtils.createBufferedImage(
+                target = solver.solve(CaptureUtils.createBufferedImage(
                         target.getScaledInstance(newSize, newSize, Image.SCALE_SMOOTH),
                         BufferedImage.TYPE_INT_RGB));
+
+                apertureImage.setImage(target);
             }
         });
         GridBagLayout layout = new GridBagLayout();
