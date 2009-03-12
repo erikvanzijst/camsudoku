@@ -66,14 +66,19 @@ public class ClassicSolver implements Solver<Integer> {
     private Constraint[][] constraintsByTile = new Constraint[81][];
     private long evals = 0L;
     private final long timeout;
+    private long start;
 
     public ClassicSolver(Integer[] board) {
+        this(board, 0L);    // no time constraint by default
+    }
+
+    public ClassicSolver(Integer[] board, long timeout) {
 
         if (board == null || board.length != 81) {
             throw new IllegalArgumentException("Board must contain 81 tiles.");
 
         } else {
-            timeout = 0L;  // no time constraint by default
+            this.timeout = timeout;
             tiles = new Tile[81];
             for (int i = 0; i < board.length; i++) {
                 if (board[i] != null && (board[i] < 1 || board[i] > 9)) {
@@ -120,6 +125,7 @@ public class ClassicSolver implements Solver<Integer> {
     public void solve(SolutionsCollector<Integer> integerSolutionsCollector) {
 
         try {
+            start = System.currentTimeMillis();
             solve(0, integerSolutionsCollector);
             integerSolutionsCollector.searchComplete(evals);
         } catch(CanceledException ce) {
@@ -140,6 +146,17 @@ public class ClassicSolver implements Solver<Integer> {
 
         if (index == tiles.length) {
             reportSolution(collector);
+
+        } else if (isTimeUp()) {
+
+            /* IMPLEMENTATION NOTE:
+             *
+             * If there's overhead involved in checking this, we can limit the
+             * check to the lower ply's of the search tree.
+             */
+            collector.timeoutExceeded(timeout);
+            throw new CanceledException();
+
         } else {
             if (tiles[index].getValue() != null) {
                 solve(index + 1, collector);
@@ -164,6 +181,10 @@ public class ClassicSolver implements Solver<Integer> {
             }
         }
         return true;
+    }
+
+    private boolean isTimeUp() {
+        return timeout > 0L && System.currentTimeMillis() - start > timeout;
     }
 
     /**

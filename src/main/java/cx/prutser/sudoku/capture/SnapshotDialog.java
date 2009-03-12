@@ -17,6 +17,8 @@ import java.awt.image.BufferedImage;
  */
 public class SnapshotDialog extends JFrame {
 
+    private static final long SEARCH_TIMEOUT = 5000L;
+
     public SnapshotDialog(Image image, final GraphicalSolver solver) {
         setTitle("Snapshot");
 
@@ -50,7 +52,7 @@ public class SnapshotDialog extends JFrame {
                 final int newSize = Math.min(bi.getWidth(), bi.getHeight());
                 target = solver.solve(CaptureUtils.createBufferedImage(
                         target.getScaledInstance(newSize, newSize, Image.SCALE_SMOOTH),
-                        BufferedImage.TYPE_INT_RGB));
+                        BufferedImage.TYPE_INT_RGB), SEARCH_TIMEOUT);
 
                 apertureImage.setImage(target);
             }

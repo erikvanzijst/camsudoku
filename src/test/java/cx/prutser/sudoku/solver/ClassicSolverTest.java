@@ -138,6 +138,10 @@ public class ClassicSolverTest {
                 public void searchComplete(long evaluations) {
                     fail();
                 }
+
+                public void timeoutExceeded(long millis) {
+                    fail();
+                }
             });
         }
     }
@@ -155,6 +159,10 @@ public class ClassicSolverTest {
             public void searchComplete(long evaluations) {
                 System.out.println("Completed in " + evaluations
                         + " evaluations: ");
+            }
+
+            public void timeoutExceeded(long millis) {
+                fail();
             }
         });
     }

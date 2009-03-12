@@ -26,4 +26,12 @@ public interface SolutionsCollector<T> {
      * @param evaluations   the total number of evaluations spent on the puzzle.
      */
     void searchComplete(long evaluations);
+
+    /**
+     * Called by the {@link cx.prutser.sudoku.solver.Solver} when the puzzle
+     * could not be solved within the timeout.
+     *
+     * @param millis    the timeout in milliseconds that was exceeded.
+     */
+    void timeoutExceeded(long millis);
 }

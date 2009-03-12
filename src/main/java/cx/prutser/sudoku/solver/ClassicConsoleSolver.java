@@ -39,6 +39,10 @@ public class ClassicConsoleSolver {
                         "All %d solutions found in %d ms and %d evaluations.",
                         count, System.currentTimeMillis() - start, evaluations));
             }
+
+            public void timeoutExceeded(long millis) {
+                System.out.println("Search canceled after " + millis + "ms");
+            }
         });
     }
 

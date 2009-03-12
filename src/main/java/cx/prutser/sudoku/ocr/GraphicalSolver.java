@@ -52,7 +52,7 @@ public class GraphicalSolver {
      * tiles.
      * @throws IllegalArgumentException when the image is not squared.
      */
-    public BufferedImage solve(BufferedImage image) throws IllegalArgumentException {
+    public BufferedImage solve(BufferedImage image, long timeout) throws IllegalArgumentException {
 
         if (image.getWidth() != image.getHeight()) {
             throw new IllegalArgumentException(String.format(
@@ -62,7 +62,7 @@ public class GraphicalSolver {
             final Integer[] board = readTiles(image);
             System.out.println(ClassicSudokuUtils.format(board));
 
-            final Integer[] solution = solve(board);
+            final Integer[] solution = solve(board, timeout);
             if (solution == null) {
                 System.out.println("Puzzle cannot be solved.");
 
@@ -118,12 +118,12 @@ public class GraphicalSolver {
      * @param board
      * @return
      */
-    private Integer[] solve(Integer[] board) {
+    private Integer[] solve(Integer[] board, long timeout) {
 
         final Integer[] solution = new Integer[81];
         final AtomicBoolean unsolvable = new AtomicBoolean(false);  // the glass is half full
 
-        new ClassicSolver(board).solve(new SolutionsCollector<Integer>() {
+        new ClassicSolver(board, timeout).solve(new SolutionsCollector<Integer>() {
             public void newSolution(Integer[] sol, SolverContext ctx) {
 
                 System.arraycopy(sol, 0, solution, 0, sol.length);
@@ -131,6 +131,11 @@ public class GraphicalSolver {
             }
 
             public void searchComplete(long evaluations) {
+                unsolvable.set(true);
+            }
+
+            public void timeoutExceeded(long millis) {
+                System.out.println("Could not solve within " + millis + "ms");
                 unsolvable.set(true);
             }
         });
