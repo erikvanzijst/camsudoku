@@ -162,7 +162,7 @@ public class GraphicalSolver {
 
         for (int i = 0; i < solution.length; i++) {
             if (solution[i] != null) {
-                int x = TILE_SIZE * (i % 9) + (TILE_SIZE - FONT_WIDTH) / 2;// + FONT_WIDTH;
+                int x = TILE_SIZE * (i % 9) + (TILE_SIZE - FONT_WIDTH) / 2;
                 int y = TILE_SIZE * (i / 9) + (TILE_SIZE - FONT_HEIGHT) / 2 + FONT_HEIGHT;
 
                 g2.drawString(String.valueOf(solution[i]), x, y);
