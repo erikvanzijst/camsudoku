@@ -43,18 +43,20 @@ public class SnapshotDialog extends JFrame {
                 filter.setClip(true);
                 filter.setInterpolation(TransformFilter.BILINEAR);
 
-                final BufferedImage target = new BufferedImage(bi.getWidth(null), bi.getHeight(null), BufferedImage.TYPE_INT_RGB);
-                filter.filter(bi, target);
+                BufferedImage corrected = new BufferedImage(bi.getWidth(null), bi.getHeight(null), BufferedImage.TYPE_INT_RGB);
+                filter.filter(bi, corrected);
+                final int newSize = Math.min(bi.getWidth(), bi.getHeight());
+                final BufferedImage target = CaptureUtils.createBufferedImage(
+                                corrected.getScaledInstance(newSize, newSize, Image.SCALE_SMOOTH),
+                                BufferedImage.TYPE_INT_RGB);
+
                 apertureImage.setImage(target);
                 apertureImage.setFixed(true);
                 button.setEnabled(false);
 
-                new Thread(new Runnable() {
+                Thread t = new Thread(new Runnable() {
                     public void run() {
-                        final int newSize = Math.min(bi.getWidth(), bi.getHeight());
-                        final BufferedImage solution = solver.solve(CaptureUtils.createBufferedImage(
-                                target.getScaledInstance(newSize, newSize, Image.SCALE_SMOOTH),
-                                BufferedImage.TYPE_INT_RGB), SEARCH_TIMEOUT);
+                        final BufferedImage solution = solver.solve(target, SEARCH_TIMEOUT);
 
                         // write solution to screen:
                         SwingUtilities.invokeLater(new Runnable() {
@@ -63,7 +65,9 @@ public class SnapshotDialog extends JFrame {
                             }
                         });
                     }
-                }).start();
+                }, "SolverThread");
+                t.setDaemon(true);
+                t.start();
             }
         });
         GridBagLayout layout = new GridBagLayout();
