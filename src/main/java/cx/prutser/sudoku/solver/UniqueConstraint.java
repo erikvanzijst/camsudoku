@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * TODO: verify if using the fastutils data structures makes sense performance wise.
+ *
  * @author Erik van Zijst
  */
 class UniqueConstraint<T> implements Constraint {
