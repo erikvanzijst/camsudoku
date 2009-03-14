@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class ApertureImage extends JPanel implements MouseListener, MouseMotionListener {
 
-    private static final int RADIUS = 6;
+    private static final int RADIUS = 7;
     private final int width;
     private final int height;
     private BufferedImage image;

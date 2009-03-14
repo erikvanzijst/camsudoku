@@ -18,6 +18,7 @@ import java.net.URL;
  */
 public class SnapshotDialog extends JFrame {
 
+    // image taken from http://www.ajaxload.info
     private static final String ANIMATION_FILE = "wait1.gif";
     private static final long SEARCH_TIMEOUT = 5000L;
 
