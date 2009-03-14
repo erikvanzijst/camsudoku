@@ -27,7 +27,7 @@ public class SnapshotDialog extends JFrame {
         final int height = bi.getHeight();
 
         final ApertureImage apertureImage = new ApertureImage(bi);
-        JButton button = new JButton("Solve");
+        final JButton button = new JButton("Solve");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Solve!");
@@ -43,18 +43,27 @@ public class SnapshotDialog extends JFrame {
                 filter.setClip(true);
                 filter.setInterpolation(TransformFilter.BILINEAR);
 
-                BufferedImage target = new BufferedImage(bi.getWidth(null), bi.getHeight(null), BufferedImage.TYPE_INT_RGB);
+                final BufferedImage target = new BufferedImage(bi.getWidth(null), bi.getHeight(null), BufferedImage.TYPE_INT_RGB);
                 filter.filter(bi, target);
                 apertureImage.setImage(target);
                 apertureImage.setFixed(true);
+                button.setEnabled(false);
 
-                // TODO: do this in a thread
-                final int newSize = Math.min(bi.getWidth(), bi.getHeight());
-                target = solver.solve(CaptureUtils.createBufferedImage(
-                        target.getScaledInstance(newSize, newSize, Image.SCALE_SMOOTH),
-                        BufferedImage.TYPE_INT_RGB), SEARCH_TIMEOUT);
+                new Thread(new Runnable() {
+                    public void run() {
+                        final int newSize = Math.min(bi.getWidth(), bi.getHeight());
+                        final BufferedImage solution = solver.solve(CaptureUtils.createBufferedImage(
+                                target.getScaledInstance(newSize, newSize, Image.SCALE_SMOOTH),
+                                BufferedImage.TYPE_INT_RGB), SEARCH_TIMEOUT);
 
-                apertureImage.setImage(target);
+                        // write solution to screen:
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                apertureImage.setImage(solution);
+                            }
+                        });
+                    }
+                }).start();
             }
         });
         GridBagLayout layout = new GridBagLayout();
