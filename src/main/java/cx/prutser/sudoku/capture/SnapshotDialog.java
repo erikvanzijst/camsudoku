@@ -25,7 +25,6 @@ public class SnapshotDialog extends JFrame {
     public SnapshotDialog(Image image, final GraphicalSolver solver) {
         setTitle("Snapshot");
         final JPanel glass = createAnimationOverlay();
-        glass.setVisible(true);
 
         final BufferedImage bi = CaptureUtils.createBufferedImage(image, BufferedImage.TYPE_INT_RGB);
         final int width = bi.getWidth();
@@ -40,6 +39,7 @@ public class SnapshotDialog extends JFrame {
 
                 java.util.List<Point> corners = apertureImage.getCorners();
 
+                // TODO: do this asynchronously in the solver thread:
                 PerspectiveFilter filter = new PerspectiveFilter();
                 filter.quadToUnitSquare(
                         (float)(corners.get(0).getX() / width), (float)(corners.get(0).getY() / height),
