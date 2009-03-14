@@ -25,7 +25,7 @@ public class SnapshotDialog extends JFrame {
     public SnapshotDialog(Image image, final GraphicalSolver solver) {
         setTitle("Snapshot");
         final JPanel glass = createAnimationOverlay();
-        glass.setVisible(false);
+        glass.setVisible(true);
 
         final BufferedImage bi = CaptureUtils.createBufferedImage(image, BufferedImage.TYPE_INT_RGB);
         final int width = bi.getWidth();
@@ -114,6 +114,8 @@ public class SnapshotDialog extends JFrame {
         } else {
             ImageIcon ii = new ImageIcon(iconUrl);
             JLabel label = new JLabel("Solving...", ii, JLabel.CENTER);
+            Font font = label.getFont().deriveFont(Font.BOLD, 20);
+            label.setFont(font);
             label.setVerticalTextPosition(JLabel.BOTTOM);
             label.setHorizontalTextPosition(JLabel.CENTER);
             glass.add(label);
