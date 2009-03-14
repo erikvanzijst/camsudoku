@@ -11,16 +11,20 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.net.URL;
 
 /**
  * @author Erik van Zijst
  */
 public class SnapshotDialog extends JFrame {
 
+    private static final String ANIMATION_FILE = "wait1.gif";
     private static final long SEARCH_TIMEOUT = 5000L;
 
     public SnapshotDialog(Image image, final GraphicalSolver solver) {
         setTitle("Snapshot");
+        final JPanel glass = createAnimationOverlay();
+        glass.setVisible(false);
 
         final BufferedImage bi = CaptureUtils.createBufferedImage(image, BufferedImage.TYPE_INT_RGB);
         final int width = bi.getWidth();
@@ -31,6 +35,7 @@ public class SnapshotDialog extends JFrame {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Solve!");
+                glass.setVisible(true);
 
                 java.util.List<Point> corners = apertureImage.getCorners();
 
@@ -62,6 +67,7 @@ public class SnapshotDialog extends JFrame {
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 apertureImage.setImage(solution);
+                                glass.setVisible(false);
                             }
                         });
                     }
@@ -89,8 +95,28 @@ public class SnapshotDialog extends JFrame {
                 dispose();
             }
         });
+
         pack();
         setResizable(false);
         setVisible(true);
+    }
+
+    private JPanel createAnimationOverlay() {
+
+        final JPanel glass = (JPanel)getGlassPane();
+        glass.setLayout(new GridBagLayout());
+
+        final URL iconUrl = getClass().getResource("/" + ANIMATION_FILE);
+        if (iconUrl == null) {
+            System.err.println("Animation file " + ANIMATION_FILE + " not found on classpath.");
+
+        } else {
+            ImageIcon ii = new ImageIcon(iconUrl);
+            JLabel label = new JLabel("Solving...", ii, JLabel.CENTER);
+            label.setVerticalTextPosition(JLabel.BOTTOM);
+            label.setHorizontalTextPosition(JLabel.CENTER);
+            glass.add(label);
+        }
+        return glass;
     }
 }
