@@ -36,35 +36,41 @@ public class SnapshotDialog extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Solve!");
                 glass.setVisible(true);
-
-                java.util.List<Point> corners = apertureImage.getCorners();
-
-                // TODO: do this asynchronously in the solver thread:
-                PerspectiveFilter filter = new PerspectiveFilter();
-                filter.quadToUnitSquare(
-                        (float)(corners.get(0).getX() / width), (float)(corners.get(0).getY() / height),
-                        (float)(corners.get(1).getX() / width), (float)(corners.get(1).getY() / height),
-                        (float)(corners.get(2).getX() / width), (float)(corners.get(2).getY() / height),
-                        (float)(corners.get(3).getX() / width), (float)(corners.get(3).getY() / height));
-                filter.setClip(true);
-                filter.setInterpolation(TransformFilter.BILINEAR);
-
-                BufferedImage corrected = new BufferedImage(bi.getWidth(null), bi.getHeight(null), BufferedImage.TYPE_INT_RGB);
-                filter.filter(bi, corrected);
-                final int newSize = Math.min(bi.getWidth(), bi.getHeight());
-                final BufferedImage target = CaptureUtils.createBufferedImage(
-                                corrected.getScaledInstance(newSize, newSize, Image.SCALE_SMOOTH),
-                                BufferedImage.TYPE_INT_RGB);
-
-                apertureImage.setImage(target);
                 apertureImage.setFixed(true);
                 button.setEnabled(false);
 
+
                 Thread t = new Thread(new Runnable() {
                     public void run() {
+
+                        java.util.List<Point> corners = apertureImage.getCorners();
+
+                        PerspectiveFilter filter = new PerspectiveFilter();
+                        filter.quadToUnitSquare(
+                                (float)(corners.get(0).getX() / width), (float)(corners.get(0).getY() / height),
+                                (float)(corners.get(1).getX() / width), (float)(corners.get(1).getY() / height),
+                                (float)(corners.get(2).getX() / width), (float)(corners.get(2).getY() / height),
+                                (float)(corners.get(3).getX() / width), (float)(corners.get(3).getY() / height));
+                        filter.setClip(true);
+                        filter.setInterpolation(TransformFilter.BILINEAR);
+
+                        BufferedImage corrected = new BufferedImage(bi.getWidth(null), bi.getHeight(null), BufferedImage.TYPE_INT_RGB);
+                        filter.filter(bi, corrected);
+                        final int newSize = Math.min(bi.getWidth(), bi.getHeight());
+                        final BufferedImage target = CaptureUtils.createBufferedImage(
+                                        corrected.getScaledInstance(newSize, newSize, Image.SCALE_SMOOTH),
+                                        BufferedImage.TYPE_INT_RGB);
+
+                        // write stretched image to the screen:
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                apertureImage.setImage(target);
+                            }
+                        });
+
                         final BufferedImage solution = solver.solve(target, SEARCH_TIMEOUT);
 
-                        // write solution to screen:
+                        // write solution to the screen:
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 apertureImage.setImage(solution);
