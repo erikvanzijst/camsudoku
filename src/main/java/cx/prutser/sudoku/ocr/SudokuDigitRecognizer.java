@@ -124,7 +124,7 @@ public class SudokuDigitRecognizer {
      *
      * @param pixels    the 8-bit gray scale pixel data (must be between 0 and 1).
      * @param expectedDigit the expected outcome ([0-9]).
-     * @throws IllegalArgumentException when the pixel data is not 48x48 wide,
+     * @throws IllegalArgumentException when the pixel data is not 16x16 wide,
      * or the expectedDigit is out of range.
      * @return <code>true</code> if the image was successfully recognized,
      * <code>false</code> if not.
