@@ -11,6 +11,6 @@ This is a pre-compiled snapshot version of the pixels library hosted at
 https://pixels.dev.java.net/
 To install this snapshot in your local maven repository, run:
 
-mvn install:install-file -DgroupId=com.jhlabs.pixels
--DartifactId=pixels-core -Dversion=2.1.2-SNAPSHOT -Dpackaging=jar
+mvn install:install-file -DgroupId=com.jhlabs.pixels \
+-DartifactId=pixels-core -Dversion=2.1.2-SNAPSHOT -Dpackaging=jar \
 -Dfile=lib/pixels-core-2.1.2-SNAPSHOT.jar
