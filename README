@@ -1,1 +1,12 @@
 Branch for exploring the target word finder puzzle.
+
+TODO:
+
+#- tool to threshold photos
+- push camword branch
+- create new tile extractor
+- train on letters
+- get and filter dictionary
+- solver algorithm
+
+

@@ -36,7 +36,8 @@ public class Thresholder {
             JLabel label = new JLabel(new ImageIcon(image));
             add(label);
             pack();
-            setTitle(filename == null ? "stdin" : filename);
+            setTitle((filename == null ? "stdin" : filename) +
+                    String.format(" - %dx%d", image.getWidth(), image.getHeight()));
 
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
