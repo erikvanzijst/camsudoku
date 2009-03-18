@@ -19,7 +19,7 @@ public class Tester {
     private String config = "config.net";
     private List<String> files = null;
 
-    public Tester(String... args) {
+    private Tester(String... args) {
         parseArgs(args);
     }
 
