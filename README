@@ -6,8 +6,8 @@ Thursday:
 #1 tool to threshold photos
 #2 push camword branch
 #3 create new tile extractor (incl. inversion)
-4 build trainer
-5 train on letters
+#4 build trainer
+#5 train on letters
 6 get and filter dictionary
 7 solver algorithm
 Friday:
