@@ -1,25 +1,25 @@
 package cx.prutser.sudoku.ocr;
 
 import javax.imageio.ImageIO;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.FilenameFilter;
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.FileOutputStream;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 /**
- * @author Erik van Zijst
+ * Command line application that trains the neural network to recognize uppercase
+ * letters.
  */
-public class Trainer {
-
+public class LetterTrainer {
     private static final int WIDTH = 16;
     private static final int HEIGHT = 16;
     private String dir = ".";
@@ -27,29 +27,30 @@ public class Trainer {
 
     private long evals = 0L;
     private long start = System.currentTimeMillis();
-    private SudokuDigitRecognizer engine;
+    private LetterRecognizer engine;
 
     static class TestValue {
 
         private final double[] input;
-        private final int expectedDigit;
+        private final char expectedChar;
         private final File file;
         private long successCount = 0L;
 
-        public TestValue(int expectedDigit, byte[] pixels, File file) {
+        public TestValue(char expectedChar, byte[] pixels, File file) {
 
-            if (expectedDigit < 0 || expectedDigit > 9 || pixels == null || pixels.length != WIDTH * HEIGHT) {
+            if (!LetterRecognizer.ALPHABET.contains(String.valueOf(expectedChar)) ||
+                    pixels == null || pixels.length != WIDTH * HEIGHT) {
                 throw new IllegalArgumentException("Pixel data out of range.");
 
             } else {
-                this.expectedDigit = expectedDigit;
+                this.expectedChar = expectedChar;
                 this.file = file;
                 this.input = OCRUtils.pixelsToPattern(pixels);
             }
         }
 
-        public int getExpectedDigit() {
-            return expectedDigit;
+        public char getExpectedChar() {
+            return expectedChar;
         }
 
         public double[] getInput() {
@@ -61,14 +62,14 @@ public class Trainer {
         }
     }
 
-    public Trainer(String... args) {
+    public LetterTrainer(String... args) {
         parseArgs(args);
         File f = new File(filename);
         if (f.exists()) {
             InputStream in = null;
             try {
                 in = new FileInputStream(f);
-                engine = new SudokuDigitRecognizer(in);
+                engine = new LetterRecognizer(in);
             } catch (IOException e) {
                 System.err.println(String.format(
                         "Error reading initial network configuration (%s): %s",
@@ -80,7 +81,7 @@ public class Trainer {
                 } catch(IOException e) {}
             }
         } else {
-            engine = new SudokuDigitRecognizer();
+            engine = new LetterRecognizer();
         }
     }
 
@@ -97,7 +98,7 @@ public class Trainer {
                 public boolean accept(File dir, String name) {
                     return new File(dir, name).isDirectory() &&
                             name.length() == 1 &&
-                            "0123456789".contains(name);
+                            LetterRecognizer.ALPHABET.contains(name);
                 }
             });
             for (String dir : dirs) {
@@ -108,7 +109,7 @@ public class Trainer {
                 });
                 for (File file : files) {
                     try {
-                        testValues.add(new TestValue(Integer.parseInt(dir), OCRUtils.getPixels(ImageIO.read(file)), file));
+                        testValues.add(new TestValue(dir.charAt(0), OCRUtils.getPixels(ImageIO.read(file)), file));
                     } catch(IllegalArgumentException iae) {
                         System.err.println("Error processing: " + file.getPath() + ": " + iae.getMessage());
                     } catch(IOException ioe) {
@@ -177,7 +178,7 @@ public class Trainer {
     private int doRun(List<TestValue> testValues) {
         int success = 0;
         for (TestValue testValue : testValues) {
-            if (engine.trainAndClassifyResult(testValue.getExpectedDigit(), testValue.getInput())) {
+            if (engine.trainAndClassifyResult(testValue.getExpectedChar(), testValue.getInput())) {
                 success++;
                 testValue.successCount++;
             }
@@ -226,14 +227,14 @@ public class Trainer {
     }
 
     public static void main(String... args) {
-        new Trainer(args).train();
+        new LetterTrainer(args).train();
     }
 
     private void parseArgs(String... args) {
 
         final String usage = "Usage: java " + getClass().getName() + " [OPTIONS]\n" +
                 "\n" +
-                "Trains the neural network to recognize the solver digits 1-9 and the blank tile\n" +
+                "Trains the neural network to recognize uppercase letters [A-Z]\n" +
                 "using the tile images from a specified directory. The tile images must be 8-bit\n" +
                 "gray scale in 16x16 resolution and png format.\n" +
                 "\n" +

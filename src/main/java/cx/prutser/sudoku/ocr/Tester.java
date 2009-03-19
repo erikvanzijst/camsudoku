@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * Tester application for the OCR engine. Takes a list of images and
- * tries to recognize their digit value.
+ * tries to recognize their character value.
  *
  * @author Erik van Zijst
  */
@@ -27,7 +27,7 @@ public class Tester {
 
         final File configFile = new File(config);
         try {
-            SudokuDigitRecognizer ocr = new SudokuDigitRecognizer(new FileInputStream(configFile));
+            LetterRecognizer ocr = new LetterRecognizer(new FileInputStream(configFile));
 
             int success = 0;
             for (String filename : files) {
@@ -37,8 +37,8 @@ public class Tester {
 
                     final double[] pixels = OCRUtils.pixelsToPattern(OCRUtils.getPixels(ImageIO.read(in)));
                     final double[] result = ocr.test(pixels);
-                    final int digit = ocr.testAndClassify(pixels);
-                    final boolean recognized = digit >= 0;
+                    final char character = ocr.testAndClassify(pixels);
+                    final boolean recognized = character != LetterRecognizer.UNRECOGNIZED;
 
                     if (recognized) {
                         success++;
@@ -46,7 +46,7 @@ public class Tester {
 
                     final StringBuilder buf = new StringBuilder();
                     buf.append(String.format("%-20s ", filename))
-                        .append(recognized ? String.valueOf(digit) : "Not recognized")
+                        .append(recognized ? String.valueOf(character) : "Not recognized")
                         .append(" [");
                     String sep = "";
                     for (double d : result) {
@@ -86,7 +86,7 @@ public class Tester {
         final String usage = "Usage: java " + getClass().getName() + " [OPTIONS] file1 file2...\n" +
                 "\n" +
                 "Tester application for the OCR engine. Takes a list of images and tries\n" +
-                "to recognize their digit value.\n" +
+                "to recognize their character value.\n" +
                 "Images must be 8-bit gray scale in 16x16 resolution and png format.\n" +
                 "\n" +
                 "OPTIONS\n" +

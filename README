@@ -2,11 +2,15 @@ Branch for exploring the target word finder puzzle.
 
 TODO:
 
-#- tool to threshold photos
-#- push camword branch
-#- create new tile extractor (incl. inversion)
-- train on letters
-- get and filter dictionary
-- solver algorithm
-
+Thursday:
+#1 tool to threshold photos
+#2 push camword branch
+#3 create new tile extractor (incl. inversion)
+4 build trainer
+5 train on letters
+6 get and filter dictionary
+7 solver algorithm
+Friday:
+8 glue ocr, GUI and solver together
+9 convert to gadget
 

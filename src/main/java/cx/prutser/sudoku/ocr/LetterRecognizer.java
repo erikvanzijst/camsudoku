@@ -3,17 +3,21 @@ package cx.prutser.sudoku.ocr;
 import com.digiburo.backprop1.BackProp;
 import com.digiburo.backprop1.Pattern;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
- * OCR engine for recognizing the digits [1-9] and the blank tile in a sudoku.
+ * OCR engine for recognizing the uppercase letters [A-Z].
  *
  * @author Erik van Zijst
  */
-public class SudokuDigitRecognizer {
+public class LetterRecognizer {
+
+    public static final char UNRECOGNIZED = '?';
+    public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final char[] CHARACTERS = ALPHABET.toCharArray();
 
     private static final double one = 0.9999999999D;
     private static final double zero = 0.0000000001D;
@@ -23,7 +27,7 @@ public class SudokuDigitRecognizer {
     private static final int hiddenLayer = 128;
     private static final float learningRate = 0.25F;    // was 0.25
     private static final float momentum = 0.30F;    // was 0.75
-    private static final double[][] outputPattern = new double[10][10];
+    private static final double[][] outputPattern = new double[26][26];
 
     private final BackProp backProp;
 
@@ -35,20 +39,20 @@ public class SudokuDigitRecognizer {
     }
 
     /**
-     * Creates a new, unconfigured digit recognizer that has to be trained first.
+     * Creates a new, unconfigured letter recognizer that has to be trained first.
      */
-    public SudokuDigitRecognizer() {
-        backProp = new BackProp(WIDTH * HEIGHT, hiddenLayer, 10, learningRate, momentum);
+    public LetterRecognizer() {
+        backProp = new BackProp(WIDTH * HEIGHT, hiddenLayer, 26, learningRate, momentum);
     }
 
     /**
-     * Creates a new instance of this digit recognizer, initialized with the
+     * Creates a new instance of this letter recognizer, initialized with the
      * network configuration stored in the specified file.
      *
      * @param in
-     * @throws IOException  when the network configuration could not be read.
+     * @throws java.io.IOException  when the network configuration could not be read.
      */
-    public SudokuDigitRecognizer(InputStream in) throws IOException {
+    public LetterRecognizer(InputStream in) throws IOException {
         try {
             backProp = new BackProp(in);
         } catch(ClassNotFoundException e) {
@@ -67,10 +71,10 @@ public class SudokuDigitRecognizer {
     /**
      *
      * @param pixels
-     * @return  the successfully recognized digit ([0-9]), or -1
+     * @return  the successfully recognized character ([A-Z]), or '?'
      * when the image could not be recognized.
      */
-    public int testAndClassify(double[] pixels) {
+    public char testAndClassify(double[] pixels) {
         return classifyResult(test(pixels));
     }
 
@@ -86,10 +90,11 @@ public class SudokuDigitRecognizer {
         }
     }
 
-    protected int classifyResult(double[] result) {
+    protected char classifyResult(double[] result) {
 
-        if (result.length != 10) {
+        if (result.length != ALPHABET.length()) {
             throw new IllegalArgumentException("Invalid array length: " + result.length);
+
         } else {
             for (int i = 0; i < outputPattern.length; i++) {
 
@@ -101,18 +106,20 @@ public class SudokuDigitRecognizer {
                     }
                 }
                 if (recognized) {
-                    return i;
+                    return CHARACTERS[i];
                 }
             }
-            return -1;
+            return UNRECOGNIZED;
         }
     }
 
-    public boolean trainAndClassifyResult(int expectedDigit, double[] pixels) throws IllegalArgumentException {
+    public boolean trainAndClassifyResult(char expectedChar, double[] pixels)
+            throws IllegalArgumentException {
 
-        double[] result = train(expectedDigit, pixels);
+        final double[] expectedPattern = outputPattern[ALPHABET.indexOf(expectedChar)];
+        double[] result = train(expectedChar, pixels);
         for (int i = 0; i < result.length; i++) {
-            if (round1(result[i]) != round2(outputPattern[expectedDigit][i])) {
+            if (round1(result[i]) != round2(expectedPattern[i])) {
                 return false;
             }
         }
@@ -123,21 +130,21 @@ public class SudokuDigitRecognizer {
      * Trains the network on one tile image.
      *
      * @param pixels    the 8-bit gray scale pixel data (must be between 0 and 1).
-     * @param expectedDigit the expected outcome ([0-9]).
+     * @param expectedChar the expected outcome ([A-Z]).
      * @throws IllegalArgumentException when the pixel data is not 16x16 wide,
-     * or the expectedDigit is out of range.
+     * or the expectedChar is invalid.
      * @return <code>true</code> if the image was successfully recognized,
      * <code>false</code> if not.
      */
-    public double[] train(int expectedDigit, double[] pixels) throws IllegalArgumentException {
+    public double[] train(char expectedChar, double[] pixels) throws IllegalArgumentException {
 
-        if (expectedDigit < 0 || expectedDigit > 9 || pixels == null || pixels.length != WIDTH * HEIGHT) {
+        if (ALPHABET.indexOf(expectedChar) < 0 || pixels == null || pixels.length != WIDTH * HEIGHT) {
             throw new IllegalArgumentException("Input out of range.");
 
         } else {
             backProp.setInputPattern(pixels);
             backProp.runNetwork();
-            backProp.trainNetwork(new Pattern(pixels, outputPattern[expectedDigit]));
+            backProp.trainNetwork(new Pattern(pixels, outputPattern[ALPHABET.indexOf(expectedChar)]));
             return backProp.getOutputPattern();
         }
     }
