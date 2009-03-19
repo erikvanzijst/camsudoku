@@ -1,10 +1,10 @@
-package cx.prutser.sudoku.solver;
+package cx.prutser.anagram;
 
 /**
- * Passed to the user by the {@link cx.prutser.sudoku.solver.Solver} when a new
+ * Passed to the user by the {@link cx.prutser.anagram.Solver} when a new
  * solution has been found.
  *
- * @see cx.prutser.sudoku.solver.SolutionsCollector#newSolution(Object[], SolverContext)
+ * @see cx.prutser.anagram.SolutionsCollector#newSolution(String, SolverContext)
  * @author Erik van Zijst
  */
 public interface SolverContext {

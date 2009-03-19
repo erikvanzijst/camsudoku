@@ -1,4 +1,4 @@
-package cx.prutser.sudoku.ocr;
+package cx.prutser.anagram;
 
 import java.io.BufferedReader;
 import java.io.IOException;

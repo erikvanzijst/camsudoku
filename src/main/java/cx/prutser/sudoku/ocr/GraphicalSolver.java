@@ -1,17 +1,5 @@
 package cx.prutser.sudoku.ocr;
 
-import cx.prutser.sudoku.solver.ClassicSolver;
-import cx.prutser.sudoku.solver.ClassicSudokuUtils;
-import cx.prutser.sudoku.solver.SolutionsCollector;
-import cx.prutser.sudoku.solver.SolverContext;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * @author Erik van Zijst
  */
