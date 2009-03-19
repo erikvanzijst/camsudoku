@@ -1,15 +1,11 @@
 package cx.prutser.sudoku.ocr;
 
-import cx.prutser.sudoku.capture.CaptureUtils;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
-import java.awt.image.PixelGrabber;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +33,8 @@ public class Thresholder {
             add(label);
             pack();
             setTitle((filename == null ? "stdin" : filename) +
-                    String.format(" - %dx%d", image.getWidth(), image.getHeight()));
+                    String.format(" - %dx%d, s=%s, c=%d", image.getWidth(), image.getHeight(),
+                            size, constant));
 
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
@@ -54,28 +51,12 @@ public class Thresholder {
 
     private void run() {
 
-        final AdapThresh thresholder = new AdapThresh();
         InputStream in = null;
         try {
             in = filename == null ? System.in : new FileInputStream(filename);
             final BufferedImage source = ImageIO.read(in);
 
-            int[] pixels = new int[source.getWidth() * source.getHeight()];
-
-            PixelGrabber grabber = new PixelGrabber(source, 0, 0, source.getWidth(), source.getHeight(), pixels, 0, source.getWidth());
-            try {
-                grabber.grabPixels();
-                pixels = thresholder.mean_thresh(pixels, source.getWidth(), source.getHeight(), size, constant);
-
-                Toolkit toolkit = Toolkit.getDefaultToolkit();
-                new GUI(CaptureUtils.createBufferedImage(
-                        toolkit.createImage(
-                                new MemoryImageSource(source.getWidth(), source.getHeight(),
-                                        pixels, 0, source.getWidth())), BufferedImage.TYPE_INT_RGB));
-
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Interrupted while grabbing pixels.");
-            }
+            new GUI(OCRUtils.threshold(source, BufferedImage.TYPE_INT_RGB, size, constant));
 
         } catch (IOException ioe) {
             System.err.println("Error reading " + filename + ": " + ioe.getMessage());

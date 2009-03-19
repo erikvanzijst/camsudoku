@@ -3,8 +3,8 @@ Branch for exploring the target word finder puzzle.
 TODO:
 
 #- tool to threshold photos
-- push camword branch
-- create new tile extractor
+#- push camword branch
+- create new tile extractor (incl. inversion)
 - train on letters
 - get and filter dictionary
 - solver algorithm

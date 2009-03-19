@@ -1,8 +1,14 @@
 package cx.prutser.sudoku.ocr;
 
+import com.jhlabs.image.CropFilter;
+import com.jhlabs.image.InvertFilter;
+import cx.prutser.sudoku.capture.CaptureUtils;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.MemoryImageSource;
+import java.awt.image.PixelGrabber;
 
 /**
  * @author Erik van Zijst
@@ -15,6 +21,66 @@ public class OCRUtils {
         g.drawImage(image, 0, 0, null);
         g.dispose();
         return gray;
+    }
+
+    /**
+     * Inverts the colours of the supplied image by subtracting every colour
+     * component from 255.
+     *
+     * @param image
+     * @return
+     */
+    public static BufferedImage invert(BufferedImage image, int targetColor) {
+        InvertFilter filter = new InvertFilter();
+        BufferedImage dest = new BufferedImage(image.getWidth(), image.getHeight(), targetColor);
+        return filter.filter(image, dest);
+    }
+
+    /**
+     * Crops the supplied image and returns the cropped fragment.
+     *
+     * @param image
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @return
+     */
+    public static BufferedImage crop(BufferedImage image, int targetColor, int x, int y, int width, int height) {
+        CropFilter filter = new CropFilter(x, y, width, height);
+        BufferedImage dest = new BufferedImage(image.getWidth(), image.getHeight(), targetColor);
+        return filter.filter(image, dest);
+    }
+
+    /**
+     * Applies adaptive thresholding to the supplied image. This filter may not
+     * produce correct results on non-gray scale images.
+     *
+     * @param image
+     * @param size
+     * @param constant
+     * @return
+     */
+    public static BufferedImage threshold(BufferedImage image, int targetColor, int size, int constant) {
+
+        AdapThresh filter = new AdapThresh();
+        BufferedImage dest = new BufferedImage(image.getWidth(), image.getHeight(), targetColor);
+
+        int[] pixels = new int[image.getWidth() * image.getHeight()];
+
+        PixelGrabber grabber = new PixelGrabber(image, 0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+        try {
+            grabber.grabPixels();
+            pixels = filter.mean_thresh(pixels, image.getWidth(), image.getHeight(), size, constant);
+
+            Toolkit toolkit = Toolkit.getDefaultToolkit();
+            return CaptureUtils.createBufferedImage(
+                    toolkit.createImage(
+                            new MemoryImageSource(image.getWidth(), image.getHeight(),
+                                    pixels, 0, image.getWidth())), targetColor);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted while grabbing pixels.");
+        }
     }
 
     /**
