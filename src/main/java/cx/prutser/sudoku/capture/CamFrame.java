@@ -73,7 +73,7 @@ public class CamFrame extends JFrame {
                 }
             });
 
-            setTitle("Sudoku Solver");
+            setTitle("Anagram Solver");
             add(player.getVisualComponent(), BorderLayout.NORTH);
             add(snapshot, BorderLayout.SOUTH);
             pack();

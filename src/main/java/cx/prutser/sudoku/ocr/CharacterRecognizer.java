@@ -13,7 +13,7 @@ import java.io.OutputStream;
  *
  * @author Erik van Zijst
  */
-public class LetterRecognizer {
+public class CharacterRecognizer {
 
     public static final char UNRECOGNIZED = '?';
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -41,7 +41,7 @@ public class LetterRecognizer {
     /**
      * Creates a new, unconfigured letter recognizer that has to be trained first.
      */
-    public LetterRecognizer() {
+    public CharacterRecognizer() {
         backProp = new BackProp(WIDTH * HEIGHT, hiddenLayer, 26, learningRate, momentum);
     }
 
@@ -52,7 +52,7 @@ public class LetterRecognizer {
      * @param in
      * @throws java.io.IOException  when the network configuration could not be read.
      */
-    public LetterRecognizer(InputStream in) throws IOException {
+    public CharacterRecognizer(InputStream in) throws IOException {
         try {
             backProp = new BackProp(in);
         } catch(ClassNotFoundException e) {

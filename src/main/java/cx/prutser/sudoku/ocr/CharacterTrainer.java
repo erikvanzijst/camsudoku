@@ -19,7 +19,7 @@ import java.util.Comparator;
  * Command line application that trains the neural network to recognize uppercase
  * letters.
  */
-public class LetterTrainer {
+public class CharacterTrainer {
     private static final int WIDTH = 16;
     private static final int HEIGHT = 16;
     private String dir = ".";
@@ -27,7 +27,7 @@ public class LetterTrainer {
 
     private long evals = 0L;
     private long start = System.currentTimeMillis();
-    private LetterRecognizer engine;
+    private CharacterRecognizer engine;
 
     static class TestValue {
 
@@ -38,7 +38,7 @@ public class LetterTrainer {
 
         public TestValue(char expectedChar, byte[] pixels, File file) {
 
-            if (!LetterRecognizer.ALPHABET.contains(String.valueOf(expectedChar)) ||
+            if (!CharacterRecognizer.ALPHABET.contains(String.valueOf(expectedChar)) ||
                     pixels == null || pixels.length != WIDTH * HEIGHT) {
                 throw new IllegalArgumentException("Pixel data out of range.");
 
@@ -62,14 +62,14 @@ public class LetterTrainer {
         }
     }
 
-    public LetterTrainer(String... args) {
+    public CharacterTrainer(String... args) {
         parseArgs(args);
         File f = new File(filename);
         if (f.exists()) {
             InputStream in = null;
             try {
                 in = new FileInputStream(f);
-                engine = new LetterRecognizer(in);
+                engine = new CharacterRecognizer(in);
             } catch (IOException e) {
                 System.err.println(String.format(
                         "Error reading initial network configuration (%s): %s",
@@ -81,7 +81,7 @@ public class LetterTrainer {
                 } catch(IOException e) {}
             }
         } else {
-            engine = new LetterRecognizer();
+            engine = new CharacterRecognizer();
         }
     }
 
@@ -98,7 +98,7 @@ public class LetterTrainer {
                 public boolean accept(File dir, String name) {
                     return new File(dir, name).isDirectory() &&
                             name.length() == 1 &&
-                            LetterRecognizer.ALPHABET.contains(name);
+                            CharacterRecognizer.ALPHABET.contains(name);
                 }
             });
             for (String dir : dirs) {
@@ -227,7 +227,7 @@ public class LetterTrainer {
     }
 
     public static void main(String... args) {
-        new LetterTrainer(args).train();
+        new CharacterTrainer(args).train();
     }
 
     private void parseArgs(String... args) {

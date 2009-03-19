@@ -1,104 +1,87 @@
 package cx.prutser.sudoku.ocr;
 
+import cx.prutser.anagram.Solver;
+
+import java.io.InputStream;
+import java.io.IOException;
+import java.util.List;
+import java.awt.image.BufferedImage;
+
 /**
  * @author Erik van Zijst
  */
 public class GraphicalSolver {
 
-//    private final static String CONFIG_FILENAME = "config.net";
-//    private final SudokuDigitRecognizer ocr;
-//
-//    public GraphicalSolver() {
-//
-//        InputStream in = this
-//                .getClass()
-//                .getClassLoader()
-//                .getResourceAsStream(CONFIG_FILENAME);
-//
-//        if (in == null) {
-//            throw new RuntimeException("Could not find neural network " +
-//                    "configuration in classpath (" + CONFIG_FILENAME + ").");
-//
-//        } else {
-//            try {
-//                ocr = new SudokuDigitRecognizer(in);
-//            } catch (IOException e) {
-//                throw new RuntimeException("Error reading neural network: " + e.getMessage(), e);
-//            } finally {
-//                try {
-//                    in.close();
-//                } catch (IOException e) {}
-//            }
-//        }
-//    }
-//
-//    /**
-//     * The supplied image must exactly contain the puzzle and be square in size.
-//     *
-//     * @param image
-//     * @return  the same image, with the missing digits superimposed on the empty
-//     * tiles.
-//     * @throws IllegalArgumentException when the image is not squared.
-//     */
-//    public BufferedImage solve(BufferedImage image, long timeout) throws IllegalArgumentException {
-//
-//        if (image.getWidth() != image.getHeight()) {
-//            throw new IllegalArgumentException(String.format(
-//                    "The supplied image must be a square; not %dx%d",
-//                    image.getWidth(), image.getHeight()));
-//        } else {
-//            final Integer[] board = readTiles(image);
-//            System.out.println(ClassicSudokuUtils.format(board));
-//
-//            final Integer[] solution = solve(board, timeout);
-//            if (solution == null) {
-//                System.out.println("Puzzle cannot be solved.");
-//
-//            } else {
-//                System.out.println(String.format(
-//                        "Solution found :\n%s", ClassicSudokuUtils.format(solution)));
-//
-//                // cut out the numbers that were in the puzzle, so we only burn the missing ones
-//                for (int i = 0; i < board.length; i++) {
-//                    if (board[i] != null) {
-//                        solution[i] = null;
-//                    }
-//                }
-//                image = burnSolution(image, solution);
-//            }
-//
-//            return image;
-//        }
-//    }
-//
-//    /**
-//     * Reads the puzzle's photo, extracts the numerical values and returns them
-//     * as a board array. Tiles that are not recognized properly are left as
-//     * blank tiles.
-//     *
-//     * @param image
-//     * @return
-//     */
-//    private Integer[] readTiles(BufferedImage image) {
-//
-//        final Integer[] board = new Integer[81];
-//        final List<BufferedImage> tiles =
-//                new AdaptiveThresholdingExtractor(
-//                        new LoggingTileExtractor(
-//                                new SimpleTileExtractor(), "snapshots"))
-//                .extractTiles(image);
-//
-//        for (int index = 0; index < tiles.size(); index++) {
-//
-//            int digit = ocr.testAndClassify(OCRUtils.pixelsToPattern(OCRUtils.getPixels(tiles.get(index))));
-//            board[index] = digit <= 0 ? null : digit;
-//            if (digit < 0) {
-//                System.err.println(String.format("Warning: tile %d not recognized!", index));
-//            }
-//        }
-//        return board;
-//    }
-//
+    private final static String CONFIG_FILENAME = "config.net";
+    private final CharacterRecognizer ocr;
+
+    public GraphicalSolver() {
+
+        InputStream in = this
+                .getClass()
+                .getClassLoader()
+                .getResourceAsStream(CONFIG_FILENAME);
+
+        if (in == null) {
+            throw new RuntimeException("Could not find neural network " +
+                    "configuration in classpath (" + CONFIG_FILENAME + ").");
+
+        } else {
+            try {
+                ocr = new CharacterRecognizer(in);
+            } catch (IOException e) {
+                throw new RuntimeException("Error reading neural network: " + e.getMessage(), e);
+            } finally {
+                try {
+                    in.close();
+                } catch (IOException e) {}
+            }
+        }
+    }
+
+    /**
+     * The supplied image must exactly contain the puzzle and be square in size.
+     * TODO: return a list of Pairs that include the definition of the returned words
+     *
+     * @param image
+     * @throws IllegalArgumentException when the image is not squared.
+     */
+    public List<String> solve(BufferedImage image) throws IllegalArgumentException {
+
+        if (image.getWidth() != image.getHeight()) {
+            throw new IllegalArgumentException(String.format(
+                    "The supplied image must be a square; not %dx%d",
+                    image.getWidth(), image.getHeight()));
+
+        } else {
+//            ocr.
+//            Solver solver = new Solver();
+            return null;
+        }
+    }
+
+    private String readCharacters(BufferedImage image) {
+
+        final List<BufferedImage> tiles =
+                new AdaptiveThresholdingExtractor(
+                        new LoggingTileExtractor(
+                                new WordTileExtractor(), "snapshots"))
+                .extractTiles(image);
+
+        final StringBuilder buf = new StringBuilder();
+
+        for (int index = 0; index < tiles.size(); index++) {
+            char c = ocr.testAndClassify(OCRUtils.pixelsToPattern(OCRUtils.getPixels(tiles.get(index))));
+            if (CharacterRecognizer.UNRECOGNIZED == c) {
+                System.err.println(String.format("Warning: tile %d not recognized!", index));
+            } else {
+                buf.append(c);
+            }
+        }
+
+        return buf.toString();
+    }
+
 //    /**
 //     * Solves the sudoku using a brute-force algorithm. Only returns the first
 //     * solution found. Returns <code>null</code> if no solution could be found.

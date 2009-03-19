@@ -27,7 +27,7 @@ public class Tester {
 
         final File configFile = new File(config);
         try {
-            LetterRecognizer ocr = new LetterRecognizer(new FileInputStream(configFile));
+            CharacterRecognizer ocr = new CharacterRecognizer(new FileInputStream(configFile));
 
             int success = 0;
             for (String filename : files) {
@@ -38,7 +38,7 @@ public class Tester {
                     final double[] pixels = OCRUtils.pixelsToPattern(OCRUtils.getPixels(ImageIO.read(in)));
                     final double[] result = ocr.test(pixels);
                     final char character = ocr.testAndClassify(pixels);
-                    final boolean recognized = character != LetterRecognizer.UNRECOGNIZED;
+                    final boolean recognized = character != CharacterRecognizer.UNRECOGNIZED;
 
                     if (recognized) {
                         success++;

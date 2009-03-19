@@ -9,7 +9,7 @@ Thursday:
 #4 build trainer
 #5 train on letters
 #6 get and filter dictionary
-7 solver algorithm
+#7 solver algorithm
 Friday:
 8 glue ocr, GUI and solver together
 9 convert to gadget

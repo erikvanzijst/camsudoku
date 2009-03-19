@@ -3,18 +3,17 @@ package cx.prutser.sudoku.ocr;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
-import org.junit.After;
 
 import java.util.Arrays;
 
 /**
  * @author  Erik van Zijst
  */
-public class LetterRecognizerTest {
+public class CharacterRecognizerTest {
 
     private double[] pattern = new double[26];
-    private final LetterRecognizer ocr = new LetterRecognizer();
-    private final char[] CHARACTERS = LetterRecognizer.ALPHABET.toCharArray();
+    private final CharacterRecognizer ocr = new CharacterRecognizer();
+    private final char[] CHARACTERS = CharacterRecognizer.ALPHABET.toCharArray();
 
     @Before
     public void before() {
@@ -24,10 +23,10 @@ public class LetterRecognizerTest {
     @Test
     public void classifyA() {
 
-        pattern[LetterRecognizer.ALPHABET.indexOf('A')] = 1;
+        pattern[CharacterRecognizer.ALPHABET.indexOf('A')] = 1;
         assertEquals('A', ocr.classifyResult(pattern));
 
-        pattern[LetterRecognizer.ALPHABET.indexOf('B')] = .4D;
+        pattern[CharacterRecognizer.ALPHABET.indexOf('B')] = .4D;
         assertEquals('A', ocr.classifyResult(pattern));
     }
 }
