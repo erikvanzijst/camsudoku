@@ -4,7 +4,7 @@ TODO:
 
 #- tool to threshold photos
 #- push camword branch
-- create new tile extractor (incl. inversion)
+#- create new tile extractor (incl. inversion)
 - train on letters
 - get and filter dictionary
 - solver algorithm

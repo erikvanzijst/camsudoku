@@ -49,7 +49,7 @@ public class OCRUtils {
     public static BufferedImage crop(BufferedImage image, int targetColor, int x, int y, int width, int height) {
         CropFilter filter = new CropFilter(x, y, width, height);
         BufferedImage dest = new BufferedImage(image.getWidth(), image.getHeight(), targetColor);
-        return filter.filter(image, dest);
+        return filter.filter(image, null);
     }
 
     /**

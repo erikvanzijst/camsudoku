@@ -35,7 +35,7 @@ public class SnapshotDialog extends JFrame {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Solve!");
-//                glass.setVisible(true);
+                glass.setVisible(true);
                 apertureImage.setFixed(true);
                 button.setEnabled(false);
 
@@ -68,7 +68,7 @@ public class SnapshotDialog extends JFrame {
                             }
                         });
 
-                        final BufferedImage solution = solver.solve(target, SEARCH_TIMEOUT);
+//                        final BufferedImage solution = solver.solve(target, SEARCH_TIMEOUT);
 
                         // write solution to the screen:
                         SwingUtilities.invokeLater(new Runnable() {
