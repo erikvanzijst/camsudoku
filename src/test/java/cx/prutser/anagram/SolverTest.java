@@ -11,16 +11,19 @@ public class SolverTest {
 
     @Test
     public void fits() {
-        Solver solver = new Solver("ABCD");
+        // center character is 'C':
+        Solver solver = new Solver("ABCDE", 2);
 
-        assertTrue(solver.fits("A"));
+        assertTrue(solver.fits("C"));
         assertTrue(solver.fits("ABCD"));
         assertTrue(solver.fits("DCBA"));
-        assertTrue(solver.fits("B"));
+        assertTrue(solver.fits("ABCDE"));
 
+        assertFalse(solver.fits("B"));
+        assertFalse(solver.fits("ABDE"));
         assertFalse(solver.fits("BAB"));
         assertFalse(solver.fits("ABAE"));
-        assertFalse(solver.fits("ABCDE"));
-        assertFalse(solver.fits("EFGH"));
+        assertFalse(solver.fits("CEFGH"));
+        assertFalse(solver.fits("ABCDEF"));
     }
 }

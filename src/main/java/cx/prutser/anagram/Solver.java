@@ -18,17 +18,21 @@ public class Solver {
 
     private final String DICT_FILENAME = "words";
     private final String target;
+    private final char required;
     private long evals;
     private final Set<Character> buf = new HashSet<Character>();
 
     /**
      *
      * @param word
+     * @param reqIndex  index of the required ("center") character that must be
+     * present in all solutions.
      * @throws IllegalArgumentException when the supplied word contained
      * non-unique characters.
      */
-    public Solver(String word) throws IllegalArgumentException {
+    public Solver(String word, int reqIndex) throws IllegalArgumentException {
         this.target = word;
+        required = word.charAt(reqIndex);
     }
 
     public void solve(SolutionsCollector collector) {
@@ -80,8 +84,9 @@ public class Solver {
 
     /**
      * Returns <code>true</code> if the supplied word can be constructed from
-     * the target characters, <code>false</code> otherwise. Words must always
-     * be in the same case. No conversion is applied.
+     * the target characters and includes the anagram's center character,
+     * <code>false</code> otherwise.
+     * Words must always be in the same case. No conversion is applied.
      *
      * @param word
      * @return
@@ -90,15 +95,22 @@ public class Solver {
 
         if (word.length() <= target.length()) {
             evals++;
+            char[] chars = word.toCharArray();
+
             try {
-                for (char c : word.toCharArray()) {
-                    if (target.indexOf(c) < 0) {
-                        return false;
-                    } else {
-                        buf.add(c);
+                // the character in the center must be present:
+                if (word.indexOf(required) >= 0) {
+
+                    for (int i = 0; i < chars.length; i++) {
+                        final char c = chars[i];
+                        if (target.indexOf(c) < 0) {
+                            return false;
+                        } else {
+                            buf.add(c);
+                        }
                     }
+                    return buf.size() == word.length();
                 }
-                return buf.size() == word.length();
             } finally {
                 buf.clear();
             }
@@ -135,14 +147,16 @@ public class Solver {
             System.exit(1);
 
         } else {
-            Solver solver = new Solver(word);
+            Solver solver = new Solver(word, word.length() / 2);
             solver.solve(new SolutionsCollector() {
+                int count = 0;
                 public void newSolution(String word, SolverContext ctx) {
                     System.out.println(word);
+                    count++;
                 }
 
                 public void searchComplete(long evaluations) {
-                    System.out.println("Search completed in " + evaluations + " evaluations.");
+                    System.out.println(count + " words found.");
                 }
 
                 public void timeoutExceeded(long millis) {

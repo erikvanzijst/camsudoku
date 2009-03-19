@@ -1,11 +1,15 @@
 package cx.prutser.sudoku.ocr;
 
+import cx.prutser.anagram.SolutionsCollector;
 import cx.prutser.anagram.Solver;
+import cx.prutser.anagram.SolverContext;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.util.List;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Erik van Zijst
@@ -54,8 +58,7 @@ public class GraphicalSolver {
                     image.getWidth(), image.getHeight()));
 
         } else {
-//            ocr.
-//            Solver solver = new Solver();
+            String chars = readCharacters(image);
             return null;
         }
     }
@@ -72,14 +75,39 @@ public class GraphicalSolver {
 
         for (int index = 0; index < tiles.size(); index++) {
             char c = ocr.testAndClassify(OCRUtils.pixelsToPattern(OCRUtils.getPixels(tiles.get(index))));
+
             if (CharacterRecognizer.UNRECOGNIZED == c) {
                 System.err.println(String.format("Warning: tile %d not recognized!", index));
+
+            } else if (index == 4) {
+                // put the middle tile at the head
+                buf.insert(0, c);
+
             } else {
                 buf.append(c);
             }
         }
 
         return buf.toString();
+    }
+
+    /**
+     *
+     * @param word  the given characters, with the required character at index 0.
+     */
+    private SortedSet<String> solve(String word) {
+
+        final SortedSet<String> words = new TreeSet<String>(new WordComparator());
+
+        new Solver(word, 0).solve(new SolutionsCollector() {
+            public void newSolution(String word, SolverContext ctx) {
+                words.add(word);
+            }
+            public void searchComplete(long evaluations) {}
+            public void timeoutExceeded(long millis) {}
+        });
+
+        return words;
     }
 
 //    /**
