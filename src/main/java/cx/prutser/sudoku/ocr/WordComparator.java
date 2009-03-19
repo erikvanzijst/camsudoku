@@ -10,7 +10,12 @@ import java.util.Comparator;
  */
 public class WordComparator implements Comparator<String> {
 
-    public int compare(String o1, String o2) {
-        throw new RuntimeException("Not implemented");
+    public int compare(String w1, String w2) {
+
+        if (w1.length() == w2.length()) {
+            return w1.compareTo(w2);
+        } else {
+            return w2.length() - w1.length();
+        }
     }
 }
