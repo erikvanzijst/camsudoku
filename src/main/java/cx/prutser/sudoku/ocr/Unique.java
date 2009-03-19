@@ -14,11 +14,12 @@ public class Unique {
 
     public static void main(String... args) throws IOException {
 
+        final Set<Character> chars = new HashSet<Character>();
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String word;
 
         while ((word = br.readLine()) != null) {
-            Set<Character> chars = new HashSet<Character>();
+            chars.clear();
             int size = 0;
             boolean drop = false;
             for (char c : word.toCharArray()) {
