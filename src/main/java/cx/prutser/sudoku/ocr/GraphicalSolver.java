@@ -7,11 +7,13 @@ import cx.prutser.anagram.SolverContext;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
+ * OCR-based anagram solver.
+ * 
  * @author Erik van Zijst
  */
 public class GraphicalSolver {
@@ -58,17 +60,15 @@ public class GraphicalSolver {
                     image.getWidth(), image.getHeight()));
 
         } else {
-            String chars = readCharacters(image);
-            return null;
+            return findWords(readCharacters(image));
         }
     }
 
     private String readCharacters(BufferedImage image) {
 
         final List<BufferedImage> tiles =
-                new AdaptiveThresholdingExtractor(
-                        new LoggingTileExtractor(
-                                new WordTileExtractor(), "snapshots"))
+                    new LoggingTileExtractor(
+                            new WordTileExtractor(), "snapshots")
                 .extractTiles(image);
 
         final StringBuilder buf = new StringBuilder();
@@ -92,12 +92,14 @@ public class GraphicalSolver {
     }
 
     /**
+     * Returns a sorted list of solutions, sorted according to relevance. The
+     * longest words at the head.
      *
      * @param word  the given characters, with the required character at index 0.
      */
-    private SortedSet<String> solve(String word) {
+    private List<String> findWords(String word) {
 
-        final SortedSet<String> words = new TreeSet<String>(new WordComparator());
+        final List<String> words = new ArrayList<String>();
 
         new Solver(word, 0).solve(new SolutionsCollector() {
             public void newSolution(String word, SolverContext ctx) {
@@ -107,6 +109,7 @@ public class GraphicalSolver {
             public void timeoutExceeded(long millis) {}
         });
 
+        Collections.sort(words, new WordComparator());
         return words;
     }
 

@@ -20,7 +20,6 @@ public class SnapshotDialog extends JFrame {
 
     // image taken from http://www.ajaxload.info
     private static final String ANIMATION_FILE = "wait1.gif";
-    private static final long SEARCH_TIMEOUT = 5000L;
 
     public SnapshotDialog(Image image, final GraphicalSolver solver) {
         setTitle("Snapshot");
@@ -32,6 +31,29 @@ public class SnapshotDialog extends JFrame {
 
         final ApertureImage apertureImage = new ApertureImage(bi);
         final JButton button = new JButton("Solve");
+
+        final JList jlist = new JList(new String[]{"foo", "bar"});
+        jlist.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        jlist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        jlist.setVisibleRowCount(-1);
+
+        JScrollPane listScroller = new JScrollPane(jlist);
+        listScroller.setPreferredSize(new Dimension(250, 80));
+        listScroller.setAlignmentX(LEFT_ALIGNMENT);
+
+        //Create a container so that we can add a title around
+        //the scroll pane.  Can't add a title directly to the
+        //scroll pane because its background would be white.
+        //Lay out the label and scroll pane from top to bottom.
+        JPanel listPane = new JPanel();
+        listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
+        JLabel label = new JLabel("Words Found:");
+        label.setLabelFor(jlist);
+        listPane.add(label);
+        listPane.add(Box.createRigidArea(new Dimension(0,5)));
+        listPane.add(listScroller);
+        listPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Solve!");
@@ -68,12 +90,12 @@ public class SnapshotDialog extends JFrame {
                             }
                         });
 
-//                        final BufferedImage solution = solver.solve(target, SEARCH_TIMEOUT);
+                        final java.util.List<String> solution = solver.solve(target);
 
                         // write solution to the screen:
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-//                                apertureImage.setImage(solution);
+                                jlist.setListData(solution.toArray());
                                 glass.setVisible(false);
                             }
                         });
@@ -83,19 +105,32 @@ public class SnapshotDialog extends JFrame {
                 t.start();
             }
         });
+
+
+        // do the layout:
         GridBagLayout layout = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
         setLayout(layout);
 
+        // add image:
         c.fill = GridBagConstraints.NONE;
         c.gridwidth = GridBagConstraints.REMAINDER;
         layout.setConstraints(apertureImage, c);
         add(apertureImage);
 
+        // add solve button:
         c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth = GridBagConstraints.REMAINDER;
         layout.setConstraints(button, c);
         add(button);
-        
+
+        // add solutions list:
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        layout.setConstraints(listPane, c);
+        add(listPane);
+
+
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 setVisible(false);

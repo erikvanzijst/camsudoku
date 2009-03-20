@@ -116,7 +116,7 @@ public class ApertureImage extends JPanel implements MouseListener, MouseMotionL
         g2.clearRect(0, 0, width, height);
         g2.drawImage(image, (width - image.getWidth()) / 2, (height - image.getHeight()) / 2, null);
         if (!fixed) {
-            g2.setPaint(Color.white);
+            g2.setPaint(Color.RED);
             g2.drawPolygon(x, y, 4);
         }
     }

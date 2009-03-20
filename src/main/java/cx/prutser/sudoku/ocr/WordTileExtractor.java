@@ -2,11 +2,10 @@ package cx.prutser.sudoku.ocr;
 
 import cx.prutser.sudoku.capture.CaptureUtils;
 
-import java.awt.image.BufferedImage;
 import java.awt.*;
-import java.util.List;
-import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class extracts the 9 tiles of the Target Word puzzle of the Sydney
@@ -55,10 +54,10 @@ public class WordTileExtractor implements TileExtractor {
         int index = 0;
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                tiles[index++] = buf.getSubimage(
+                tiles[index++] = OCRUtils.toGrayScale(buf.getSubimage(
                         col * (TILE_SIZE + 2 * TILE_MARGIN) + TILE_MARGIN,
                         row * (TILE_SIZE + 2 * TILE_MARGIN) + TILE_MARGIN,
-                        TILE_SIZE, TILE_SIZE);
+                        TILE_SIZE, TILE_SIZE));
             }
         }
 
