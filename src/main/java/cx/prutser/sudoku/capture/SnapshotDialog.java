@@ -96,7 +96,7 @@ public class SnapshotDialog extends JFrame {
                         // write solution to the screen:
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
-                                label.setText(label.getText() + " " + chars);
+                                label.setText(label.getText() + " " + chars + " -- " + solution.size() + " words");
                                 jlist.setListData(solution.toArray());
                                 glass.setVisible(false);
                             }
