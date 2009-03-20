@@ -32,7 +32,7 @@ public class SnapshotDialog extends JFrame {
         final ApertureImage apertureImage = new ApertureImage(bi);
         final JButton button = new JButton("Solve");
 
-        final JList jlist = new JList(new String[]{"foo", "bar"});
+        final JList jlist = new JList();
         jlist.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         jlist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         jlist.setVisibleRowCount(-1);

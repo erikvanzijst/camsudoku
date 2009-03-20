@@ -12,7 +12,7 @@ Thursday:
 #7 solver algorithm
 Friday:
 #8 glue ocr, GUI and solver together
-9 dual head monitors
-9 convert to gadget
-10 put word definition in tooltip
+#9 dual head monitors
+10 convert to applet/gadget
+11 put word definition in tooltip
 

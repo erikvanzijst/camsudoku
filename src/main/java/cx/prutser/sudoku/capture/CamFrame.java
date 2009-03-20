@@ -4,8 +4,6 @@ import cx.prutser.sudoku.ocr.GraphicalSolver;
 
 import javax.media.Buffer;
 import javax.media.CaptureDeviceInfo;
-import javax.media.CaptureDeviceManager;
-import javax.media.Format;
 import javax.media.Manager;
 import javax.media.Player;
 import javax.media.control.FormatControl;
@@ -21,21 +19,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * @author Erik van Zijst
  */
 public class CamFrame extends JFrame {
 
-    private String locator = null;
-
     public CamFrame(String... args) throws Exception {
-        setLayout(new BorderLayout());
-        parseArgs(args);
 
-        final CaptureDeviceInfo device = getDeviceInfo();
+//        loadNativeLibs();
+
+        setLayout(new BorderLayout());
+
+        final CaptureDeviceInfo device = CaptureUtils.getDeviceInfo();
         if (device == null) {
             System.err.println("Capture device not found.");
             System.exit(1);
@@ -45,7 +41,7 @@ public class CamFrame extends JFrame {
             CaptureDevice cd = (CaptureDevice)dataSource;
 
             for(FormatControl fc : cd.getFormatControls()) {
-                RGBFormat rgb = findMatchingFormat(fc.getSupportedFormats(), new Dimension(640, 480));
+                RGBFormat rgb = CaptureUtils.findMatchingFormat(fc.getSupportedFormats(), new Dimension(640, 480));
                 if (rgb != null) {
                     System.out.println("Selecting 640x480 resolution.");
                     RGBFormat format = new RGBFormat(new Dimension(640,480), 614400, byte[].class, (float)25.0, 16, 63488, 2016, 31);
@@ -83,52 +79,25 @@ public class CamFrame extends JFrame {
         }
     }
 
+    private void loadNativeLibs() {
+        
+        System.loadLibrary("jmfjawt");
+        System.loadLibrary("jmmpx");
+        System.loadLibrary("jmxlib");
+        System.loadLibrary("jmv4l");
+        System.loadLibrary("jmmpegv");
+        System.loadLibrary("jmutil");
+        System.loadLibrary("jmmpa");
+        System.loadLibrary("jmdaud");
+        System.loadLibrary("jmcvid");
+        System.loadLibrary("jmjpeg");
+        System.loadLibrary("jmh263enc");
+        System.loadLibrary("jmh261");
+        System.loadLibrary("jmg723");
+        System.loadLibrary("jmgsm");
+    }
+
     public static void main(String[] args) throws Exception {
         JFrame f = new CamFrame(args);
-    }
-
-    private CaptureDeviceInfo getDeviceInfo() {
-
-        CaptureDeviceInfo device = null;
-
-        Vector devices = CaptureDeviceManager.getDeviceList(null);
-
-        for(Iterator it = devices.iterator(); it.hasNext();) {
-            CaptureDeviceInfo di = (CaptureDeviceInfo)it.next();
-            if (locator != null && locator.equals(di.getLocator().toString())) {
-                device = di;
-                break;
-            } else {
-                if (findMatchingFormat(di.getFormats(), new Dimension(640, 480)) != null) {
-                    device = di;
-                }
-            }
-        }
-        return device;
-    }
-
-    /**
-     * Returns the first {@link javax.media.format.RGBFormat} that matches the
-     * given resolution.
-     *
-     * @param formats
-     * @param size
-     * @return
-     */
-    private RGBFormat findMatchingFormat(Format[] formats, Dimension size) {
-
-        for (Format f : formats) {
-            if (f instanceof RGBFormat) {
-                RGBFormat rgb = (RGBFormat)f;
-                if (rgb.getSize().equals(new Dimension(640, 480))) {
-                    return rgb;
-                }
-            }
-        }
-        return null;
-    }
-
-    private void parseArgs(String... args) {
-
     }
 }
