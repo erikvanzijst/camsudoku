@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -17,7 +20,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Solver {
 
     private final String DICT_FILENAME = "words";
-    private final String target;
+
+    private final List<Character> target;
     private final char required;
     private long evals;
     private final Set<Character> buf = new HashSet<Character>();
@@ -31,7 +35,11 @@ public class Solver {
      * non-unique characters.
      */
     public Solver(String word, int reqIndex) throws IllegalArgumentException {
-        this.target = word;
+        List<Character> t = new ArrayList<Character>();
+        for (char c : word.toCharArray()) {
+            t.add(c);
+        }
+        target = Collections.unmodifiableList(t);
         required = word.charAt(reqIndex);
     }
 
@@ -93,27 +101,21 @@ public class Solver {
      */
     protected boolean fits(String word) {
 
-        if (word.length() <= target.length()) {
+        // the character in the center must be present:
+        if (word.length() <= target.size() &&
+                word.indexOf(required) >= 0) {
             evals++;
-            char[] chars = word.toCharArray();
+            final List<Character> copy = new ArrayList<Character>(target);
 
-            try {
-                // the character in the center must be present:
-                if (word.indexOf(required) >= 0) {
-
-                    for (int i = 0; i < chars.length; i++) {
-                        final char c = chars[i];
-                        if (target.indexOf(c) < 0) {
-                            return false;
-                        } else {
-                            buf.add(c);
-                        }
-                    }
-                    return buf.size() == word.length();
+            for (char c : word.toCharArray()) {
+                int pos = copy.indexOf(c);
+                if (pos >= 0) {
+                    copy.remove(pos);
+                } else {
+                    return false;
                 }
-            } finally {
-                buf.clear();
             }
+            return true;
         }
         return false;
     }

@@ -26,4 +26,22 @@ public class SolverTest {
         assertFalse(solver.fits("CEFGH"));
         assertFalse(solver.fits("ABCDEF"));
     }
+
+    @Test
+    public void fitsDuplicateChars() {
+
+        // center character is 'C':
+        Solver solver = new Solver("ABCDED", 2);
+
+        assertTrue(solver.fits("C"));
+        assertTrue(solver.fits("DDC"));
+        assertTrue(solver.fits("DC"));
+        assertTrue(solver.fits("ABDCDE"));
+        assertTrue(solver.fits("C"));
+
+        assertFalse(solver.fits("EFDDC"));
+        assertFalse(solver.fits("EFDDD"));
+        assertFalse(solver.fits("EFGH"));
+        assertFalse(solver.fits("AECDE"));
+    }
 }

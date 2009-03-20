@@ -20,6 +20,7 @@ public class GraphicalSolver {
 
     private final static String CONFIG_FILENAME = "config.net";
     private final CharacterRecognizer ocr;
+    private String target = "";
 
     public GraphicalSolver() {
 
@@ -43,6 +44,16 @@ public class GraphicalSolver {
                 } catch (IOException e) {}
             }
         }
+    }
+
+    /**
+     * Returns the characters as recognized from the puzzle, in their original
+     * order.
+     *
+     * @return
+     */
+    public String getTarget() {
+        return target;
     }
 
     /**
@@ -72,6 +83,7 @@ public class GraphicalSolver {
                 .extractTiles(image);
 
         final StringBuilder buf = new StringBuilder();
+        final StringBuilder t = new StringBuilder();
 
         for (int index = 0; index < tiles.size(); index++) {
             char c = ocr.testAndClassify(OCRUtils.pixelsToPattern(OCRUtils.getPixels(tiles.get(index))));
@@ -82,12 +94,15 @@ public class GraphicalSolver {
             } else if (index == 4) {
                 // put the middle tile at the head
                 buf.insert(0, c);
+                t.append(c);
 
             } else {
                 buf.append(c);
+                t.append(c);
             }
         }
 
+        target = t.toString();
         return buf.toString();
     }
 

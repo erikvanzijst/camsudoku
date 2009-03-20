@@ -47,7 +47,7 @@ public class SnapshotDialog extends JFrame {
         //Lay out the label and scroll pane from top to bottom.
         JPanel listPane = new JPanel();
         listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
-        JLabel label = new JLabel("Words Found:");
+        final JLabel label = new JLabel("Words Found for:");
         label.setLabelFor(jlist);
         listPane.add(label);
         listPane.add(Box.createRigidArea(new Dimension(0,5)));
@@ -91,10 +91,12 @@ public class SnapshotDialog extends JFrame {
                         });
 
                         final java.util.List<String> solution = solver.solve(target);
+                        final String chars = solver.getTarget();
 
                         // write solution to the screen:
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
+                                label.setText(label.getText() + " " + chars);
                                 jlist.setListData(solution.toArray());
                                 glass.setVisible(false);
                             }
