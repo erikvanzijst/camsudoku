@@ -91,5 +91,23 @@
 	      </plugin>
         </plugins>
     </build>
+	<reporting>
+	    <plugins>
+	      <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-pmd-plugin</artifactId>
+		<configuration>
+		  <minimumTokens>100</minimumTokens>
+		  <targetJdk>1.5</targetJdk>
+		  <includes>
+		    <include>**/*.java</include>
+		  </includes>
+		  <excludes>
+		    <exclude>**/*Bean.java</exclude>
+		  </excludes>
+		</configuration>
+	      </plugin>
+	    </plugins>
+	</reporting>
 </project>
 
