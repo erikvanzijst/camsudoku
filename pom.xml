@@ -72,6 +72,24 @@
                     </execution>
                 </executions>
             </plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-jar-plugin</artifactId>
+		<executions>
+		  <execution>
+		    <goals>
+		      <goal>sign</goal>
+		    </goals>
+		  </execution>
+		</executions>
+		<configuration>
+		  <alias>http://prutser.cx</alias>
+		  <storepass>abc123</storepass>
+		  <signedjar>${project.build.directory}/signed/${project.build.finalName}.jar</signedjar>
+		  <verify>true</verify>
+		</configuration>
+	      </plugin>
         </plugins>
     </build>
 </project>
+
